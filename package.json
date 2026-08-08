@@ -1,0 +1,22 @@
+{
+  "name": "registro-fotografico-petrolimpio",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.112.2",
+    "@vitejs/plugin-react": "^6.0.5",
+    "html2canvas": "^1.4.1",
+    "idb": "^8.0.3",
+    "jspdf": "^4.2.1",
+    "lucide-react": "^1.30.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "vite": "^8.2.1"
+  }
+}
