@@ -832,8 +832,8 @@ body {
 
 /* LIVE A4 SHEET RENDERING MATCHING OFFICIAL PDF EXACTLY */
 .live-a4-sheet {
-  width: 210mm;
-  height: 290mm;
+  width: 794px;
+  height: 1123px;
   background: white;
   color: black;
   border: 2px solid #000;
@@ -842,25 +842,26 @@ body {
   flex-direction: column;
   box-sizing: border-box;
   position: relative;
+  overflow: hidden;
 }
 
 .live-header-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 8.5pt;
-  line-height: 1.25;
+  font-size: 8pt;
+  line-height: 1.2;
   flex-shrink: 0; /* Header stays strictly at the top */
 }
 
 .live-header-table td {
   border: 1px solid #000;
-  padding: 3px 5px;
+  padding: 2px 5px;
   vertical-align: middle;
 }
 
 .live-brand-logo {
   font-weight: 800;
-  font-size: 11pt;
+  font-size: 10pt;
   color: #0284c7;
   text-align: center;
 }
@@ -870,8 +871,11 @@ body {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
   flex: 1; /* Stretches 100% to fill sheet to the bottom border */
+  min-height: 0; /* Prevents grid items from expanding row height beyond container */
+  height: 100%;
   width: 100%;
-  border-top: 1px solid #000;
+  border-top: 1.5px solid #000;
+  box-sizing: border-box;
 }
 
 .live-pdf-slot {
@@ -882,7 +886,11 @@ body {
   position: relative;
   overflow: hidden;
   background: #fff;
-  padding: 4px;
+  padding: 3px;
+  min-height: 0;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .live-pdf-slot img {
@@ -894,7 +902,7 @@ body {
 
 .live-slot-placeholder {
   color: #888;
-  font-size: 9pt;
+  font-size: 8.5pt;
   font-weight: bold;
   text-align: center;
   padding: 4px;
@@ -1627,7 +1635,7 @@ body {
     page-break-after: always;
     page-break-inside: avoid;
     width: 210mm;
-    height: 282mm;
+    height: 285mm;
     display: flex !important;
     flex-direction: column !important;
     border: 2px solid #000;
@@ -1640,14 +1648,14 @@ body {
   .pdf-table-header {
     width: 100%;
     border-collapse: collapse;
-    font-size: 8.5pt;
-    line-height: 1.25;
+    font-size: 8pt;
+    line-height: 1.2;
     flex-shrink: 0 !important;
   }
 
   .pdf-table-header td {
     border: 1px solid #000;
-    padding: 3px 5px;
+    padding: 2px 5px;
     vertical-align: middle;
   }
 
@@ -1656,8 +1664,11 @@ body {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
     flex: 1 !important;
+    min-height: 0 !important;
+    height: 100% !important;
     width: 100%;
-    border-top: 1px solid #000;
+    border-top: 1.5px solid #000;
+    box-sizing: border-box;
   }
 
   .pdf-slot {
@@ -1666,10 +1677,13 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 4px;
+    padding: 3px;
     position: relative;
     overflow: hidden;
     background: #fff;
+    min-height: 0 !important;
+    height: 100% !important;
+    box-sizing: border-box;
   }
 
   .pdf-slot img {
@@ -1684,7 +1698,7 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 9.5pt;
+    font-size: 8.5pt;
     font-weight: bold;
     color: #444;
     text-align: center;
