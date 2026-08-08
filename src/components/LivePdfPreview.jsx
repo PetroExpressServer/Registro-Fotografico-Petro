@@ -11,19 +11,18 @@ export default function LivePdfPreview({ record, date, contract, supervisor, onP
   const dParts = (date || '').split('-');
   const formattedDate = dParts.length === 3 ? `${dParts[2]}/${dParts[1]}/${dParts[0]}` : date;
 
-  // Auto-fit A4 sheet scale on mobile resize
+  // Auto-fit A4 sheet scale on mobile resize (794px width x 1123px height standard A4 at 96dpi)
   useEffect(() => {
     const handleResize = () => {
       if (viewportRef.current) {
         const width = viewportRef.current.clientWidth;
         if (width < 500) {
-          // A4 width in px is ~794px. Target padding is 16px.
-          const calculatedZoom = (width - 16) / 794;
-          setZoom(Math.max(0.38, Math.min(0.9, calculatedZoom)));
+          const calculatedZoom = (width - 20) / 794;
+          setZoom(Math.max(0.35, Math.min(0.9, calculatedZoom)));
         } else if (width < 900) {
-          setZoom(0.65);
+          setZoom(0.62);
         } else {
-          setZoom(0.85);
+          setZoom(0.82);
         }
       }
     };
@@ -51,6 +50,17 @@ export default function LivePdfPreview({ record, date, contract, supervisor, onP
   };
 
   const currentSlots = getPageSlots(currentPage);
+
+  // Fill up to 9 items per page so the 3x3 grid always renders 3 full rows (Row 1, Row 2, Row 3)
+  const fullPageSlots = [...currentSlots];
+  while (fullPageSlots.length < 9) {
+    fullPageSlots.push({
+      id: `empty_${currentPage}_${fullPageSlots.length}`,
+      title: '',
+      isEmptyPlaceholder: true
+    });
+  }
+
   const photos = record?.photos || {};
 
   // Shift label and hours per page
@@ -138,13 +148,13 @@ export default function LivePdfPreview({ record, date, contract, supervisor, onP
         ))}
       </div>
 
-      {/* Viewport View */}
+      {/* Viewport View (Standard A4 Dimensions: 794px x 1123px) */}
       <div className="live-pdf-viewport" ref={viewportRef}>
         <div
           className="live-a4-sheet-wrapper"
           style={{
             width: `${794 * zoom}px`,
-            height: `${1080 * zoom}px`,
+            height: `${1123 * zoom}px`,
             position: 'relative',
             overflow: 'hidden'
           }}
@@ -156,7 +166,11 @@ export default function LivePdfPreview({ record, date, contract, supervisor, onP
               transformOrigin: 'top left',
               position: 'absolute',
               top: 0,
-              left: 0
+              left: 0,
+              width: '794px',
+              height: '1123px',
+              display: 'flex',
+              flexDirection: 'column'
             }}
           >
             {/* EXACT TABLE HEADER MATCHING USER REFERENCE */}
@@ -235,10 +249,10 @@ export default function LivePdfPreview({ record, date, contract, supervisor, onP
               </tbody>
             </table>
 
-            {/* 3x3 Photo Grid */}
+            {/* 3x3 Photo Grid - Always 9 slots filling 100% of remaining sheet height */}
             <div className="live-3x3-grid">
-              {currentSlots.map((slot) => {
-                const photoData = photos[slot.id];
+              {fullPageSlots.map((slot) => {
+                const photoData = slot.isEmptyPlaceholder ? null : photos[slot.id];
                 return (
                   <div key={slot.id} className="live-pdf-slot">
                     {photoData ? (

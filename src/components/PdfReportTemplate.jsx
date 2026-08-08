@@ -34,6 +34,16 @@ export default function PdfReportTemplate({ record, date, contract, supervisor, 
       {[1, 2, 3, 4, 5].map((pageNum) => {
         const slots = getPageSlots(pageNum);
 
+        // Fill up to 9 items so the grid always renders 3 full rows (Row 1, Row 2, Row 3)
+        const fullPageSlots = [...slots];
+        while (fullPageSlots.length < 9) {
+          fullPageSlots.push({
+            id: `empty_print_${pageNum}_${fullPageSlots.length}`,
+            title: '',
+            isEmptyPlaceholder: true
+          });
+        }
+
         let shiftLabel = 'TURNO 1 :';
         let shiftHours = '06:00 hasta 14:00 horas';
 
@@ -132,10 +142,10 @@ export default function PdfReportTemplate({ record, date, contract, supervisor, 
               </tbody>
             </table>
 
-            {/* 3x3 Photo Grid */}
+            {/* 3x3 Photo Grid - Always 9 slots filling 100% of remaining sheet height */}
             <div className="pdf-3x3-grid">
-              {slots.map((slot) => {
-                const photoData = photos[slot.id];
+              {fullPageSlots.map((slot) => {
+                const photoData = slot.isEmptyPlaceholder ? null : photos[slot.id];
                 return (
                   <div key={slot.id} className="pdf-slot">
                     {photoData ? (
