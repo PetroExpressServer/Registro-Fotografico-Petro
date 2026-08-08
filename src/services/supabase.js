@@ -4,13 +4,26 @@ import * as localDb from './db';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
+let clientInstance = null;
+let isConfigured = false;
 
-export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null;
+if (supabaseUrl && supabaseAnonKey) {
+  try {
+    clientInstance = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: { persistSession: false }
+    });
+    isConfigured = true;
+  } catch (err) {
+    console.error('Supabase initialization warning:', err);
+    clientInstance = null;
+    isConfigured = false;
+  }
+}
 
-// UNIFIED HYBRID SERVICE: Uses Supabase Cloud when credentials exist, else falls back to Local IndexedDB
+export const isSupabaseConfigured = isConfigured;
+export const supabase = clientInstance;
+
+// UNIFIED HYBRID SERVICE: Uses Supabase Cloud when credentials exist & valid, else falls back to Local IndexedDB
 
 export async function getRecord(contract, date) {
   if (isSupabaseConfigured && supabase) {
