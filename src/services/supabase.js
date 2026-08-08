@@ -56,6 +56,9 @@ export async function getRecord(contract, date) {
 }
 
 export async function saveRecord(record) {
+  // Always save to local IndexedDB first for instant safety
+  await localDb.saveRecord(record);
+
   if (isSupabaseConfigured && supabase) {
     try {
       const id = `${record.contract}_${record.date}`;
@@ -75,10 +78,9 @@ export async function saveRecord(record) {
         console.warn('Supabase save warning:', error.message);
       }
     } catch (err) {
-      console.warn('Error saving record to Supabase Cloud, backing up to local DB:', err);
+      console.warn('Error saving record to Supabase Cloud:', err);
     }
   }
-  return localDb.saveRecord(record);
 }
 
 export async function getAllRecords() {
@@ -169,4 +171,23 @@ export async function saveConfig(configData) {
     }
   }
   return localDb.saveConfig(configData);
+}
+
+// Auto Sync helper: Uploads any local IndexedDB records to Supabase Cloud
+export async function syncLocalToCloud() {
+  if (!isSupabaseConfigured || !supabase) return 0;
+  try {
+    const allLocal = await localDb.getAllRecords();
+    let count = 0;
+    for (const record of allLocal) {
+      if (record.contract && record.date && record.photos && Object.keys(record.photos).length > 0) {
+        await saveRecord(record);
+        count++;
+      }
+    }
+    return count;
+  } catch (err) {
+    console.error('Error syncing local records to cloud:', err);
+    return 0;
+  }
 }

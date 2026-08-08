@@ -11,7 +11,7 @@ import PdfReportTemplate from './components/PdfReportTemplate';
 
 import { SHIFT_SLOTS, CONTRACT_SPECS } from './constants/structure';
 import { DEFAULT_CONFIG } from './services/db';
-import { getRecord, saveRecord, getAllRecords, getSupervisors, addSupervisor, getConfig } from './services/supabase';
+import { getRecord, saveRecord, getAllRecords, getSupervisors, addSupervisor, getConfig, syncLocalToCloud } from './services/supabase';
 import { applyWatermark } from './services/watermark';
 import { Save, Trash2, Printer, CheckCircle, X, ArrowLeft, History, Menu, Camera, Eye, Calendar, Settings } from 'lucide-react';
 
@@ -50,10 +50,13 @@ export default function App() {
     setTimeout(() => setToastMessage(null), 2500);
   };
 
-  // Load Config & Supervisors on Mount
+  // Load Config, Supervisors & Auto-sync local photos to cloud on Mount
   useEffect(() => {
     getConfig().then(setConfig);
     getSupervisors().then(setSupervisorsList);
+    syncLocalToCloud().then(count => {
+      if (count > 0) notify(`☁️ Sincronizados ${count} registros a la Nube`);
+    });
   }, []);
 
   // Fetch Record when contract or date changes
