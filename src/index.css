@@ -830,16 +830,15 @@ body {
   align-items: flex-start;
 }
 
-/* LIVE A4 SHEET RENDERING MATCHING OFFICIAL PDF */
+/* LIVE A4 SHEET RENDERING MATCHING OFFICIAL PDF EXACTLY */
 .live-a4-sheet {
   width: 210mm;
-  min-height: 285mm;
+  height: 290mm;
   background: white;
   color: black;
   border: 2px solid #000;
   box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-  display: flex;
-  flex-direction: column;
+  display: block; /* Standard block layout prevents flex inversions */
   box-sizing: border-box;
   position: relative;
 }
@@ -868,7 +867,7 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  flex: 1;
+  height: calc(290mm - 64mm); /* Strict calculation to keep table on TOP */
   width: 100%;
   border-top: 1px solid #000;
 }
@@ -1069,65 +1068,6 @@ body {
   display: flex;
   align-items: center;
   gap: 0.3rem;
-}
-
-/* Cloud Status Boxes */
-.cloud-status-box {
-  border-radius: 12px;
-  padding: 1.25rem;
-  border: 1.5px solid var(--border);
-}
-
-.cloud-status-box.connected {
-  background-color: #f0fdf4;
-  border-color: #a7f3d0;
-  color: #065f46;
-}
-
-.cloud-status-box.disconnected {
-  background-color: #fffbeb;
-  border-color: #fde68a;
-  color: #92400e;
-}
-
-.cloud-status-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-.cloud-status-header h4 {
-  font-size: 1rem;
-  font-weight: 800;
-  margin-bottom: 0.25rem;
-}
-
-.cloud-instructions-box {
-  background-color: #f8fafc;
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  padding: 1.25rem;
-}
-
-.cloud-instructions-box h4 {
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: var(--secondary);
-  margin-bottom: 0.75rem;
-}
-
-.cloud-steps-list {
-  padding-left: 1.25rem;
-  font-size: 0.88rem;
-  color: var(--text-dark);
-  line-height: 1.6;
-}
-
-.cloud-steps-list code {
-  background: #e2e8f0;
-  padding: 0.1rem 0.4rem;
-  border-radius: 4px;
-  font-size: 0.82rem;
 }
 
 /* FULL PAGE HISTORY VIEW */
@@ -1683,10 +1623,10 @@ body {
 
   .pdf-page-wrapper {
     page-break-after: always;
+    page-break-inside: avoid;
+    width: 210mm;
     height: 282mm;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+    display: block !important;
     border: 2px solid #000;
     box-sizing: border-box;
     margin-bottom: 0;
@@ -1711,7 +1651,7 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    flex: 1;
+    height: calc(282mm - 58mm);
     width: 100%;
     border-top: 1px solid #000;
   }
