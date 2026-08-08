@@ -76,13 +76,11 @@ export default function PdfReportTemplate({ record, date, contract, supervisor, 
                 {/* Row 1: Logo + Title */}
                 <tr>
                   <td style={{ textAlign: 'center', verticalAlign: 'middle', padding: '4px', borderRight: '1px solid #000' }}>
-                    {config.logoUrl ? (
-                      <img src={config.logoUrl} alt="Logo" style={{ maxHeight: '48px', maxWidth: '100%', objectFit: 'contain' }} />
-                    ) : (
-                      <div style={{ fontWeight: 'bold', fontSize: '11pt', color: '#0284c7' }}>
-                        {config.companyName || 'CONSORCIO PETRO LIMPIO'}
-                      </div>
-                    )}
+                    <img
+                      src={config.logoUrl || '/petroaseo-logo.png'}
+                      alt="Logo Formato"
+                      style={{ maxHeight: '48px', maxWidth: '100%', objectFit: 'contain', display: 'block', margin: '0 auto' }}
+                    />
                   </td>
                   <td colSpan={3} style={{ textAlign: 'center', padding: '5px 4px', verticalAlign: 'middle' }}>
                     <div style={{ fontWeight: 'bold', fontSize: '11pt', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
