@@ -838,7 +838,8 @@ body {
   color: black;
   border: 2px solid #000;
   box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-  display: block; /* Standard block layout prevents flex inversions */
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
   position: relative;
 }
@@ -848,6 +849,7 @@ body {
   border-collapse: collapse;
   font-size: 8.5pt;
   line-height: 1.25;
+  flex-shrink: 0; /* Header stays strictly at the top */
 }
 
 .live-header-table td {
@@ -867,7 +869,7 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  height: calc(290mm - 64mm); /* Strict calculation to keep table on TOP */
+  flex: 1; /* Stretches 100% to fill sheet to the bottom border */
   width: 100%;
   border-top: 1px solid #000;
 }
@@ -1626,7 +1628,8 @@ body {
     page-break-inside: avoid;
     width: 210mm;
     height: 282mm;
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
     border: 2px solid #000;
     box-sizing: border-box;
     margin-bottom: 0;
@@ -1639,6 +1642,7 @@ body {
     border-collapse: collapse;
     font-size: 8.5pt;
     line-height: 1.25;
+    flex-shrink: 0 !important;
   }
 
   .pdf-table-header td {
@@ -1651,7 +1655,7 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    height: calc(282mm - 58mm);
+    flex: 1 !important;
     width: 100%;
     border-top: 1px solid #000;
   }
