@@ -1,20 +1,21 @@
 :root {
-  --primary: #0284c7;
-  --primary-dark: #0369a1;
-  --primary-light: #e0f2fe;
-  --secondary: #0f172a;
+  --primary: #c8102e;
+  --primary-dark: #a00c23;
+  --primary-light: #fde8eb;
+  --secondary: #111827;
   --accent: #10b981;
-  --accent-dark: #059669;
+  --accent-dark: #047857;
   --danger: #ef4444;
-  --bg-slate: #f1f5f9;
+  --bg-slate: #f8fafc;
   --card-bg: #ffffff;
-  --border: #cbd5e1;
-  --text-dark: #0f172a;
-  --text-muted: #64748b;
-  --sidebar-bg: #0f172a;
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 8px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 20px -3px rgba(0, 0, 0, 0.15);
+  --border: #e5e7eb;
+  --border-dark: #d1d5db;
+  --text-dark: #1f2937;
+  --text-muted: #6b7280;
+  --sidebar-bg: #ffffff;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 25px -4px rgba(0, 0, 0, 0.08);
   --radius: 12px;
 }
 
@@ -43,9 +44,9 @@ body {
 /* Mobile Header (Hidden on Desktop) */
 .mobile-top-header {
   display: none;
-  height: 56px;
-  background-color: var(--sidebar-bg);
-  color: white;
+  height: 60px;
+  background-color: #ffffff;
+  color: var(--text-dark);
   align-items: center;
   justify-content: space-between;
   padding: 0 1rem;
@@ -54,15 +55,16 @@ body {
   left: 0;
   right: 0;
   z-index: 100;
-  box-shadow: var(--shadow-md);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-mobile-menu {
   background: transparent;
   border: none;
-  color: white;
+  color: var(--text-dark);
   cursor: pointer;
-  padding: 0.3rem;
+  padding: 0.4rem;
   display: flex;
   align-items: center;
 }
@@ -70,93 +72,72 @@ body {
 .mobile-brand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  height: 36px;
 }
 
-.mobile-brand-logo {
-  width: 28px;
-  height: 28px;
-  background: linear-gradient(135deg, #0284c7 0%, #10b981 100%);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 0.85rem;
-  color: white;
-}
-
-.mobile-brand-title {
-  font-weight: 800;
-  font-size: 1.05rem;
+.mobile-brand-img {
+  height: 32px;
+  max-width: 160px;
+  object-fit: contain;
 }
 
 .mobile-sup-chip {
-  background: rgba(255, 255, 255, 0.12);
-  padding: 0.25rem 0.6rem;
-  border-radius: 12px;
-  font-size: 0.75rem;
+  background: #f1f5f9;
+  border: 1px solid var(--border);
+  color: var(--text-dark);
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
   font-weight: 700;
-  max-width: 120px;
+  max-width: 130px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* Sidebar */
+/* Sidebar - Modern White Theme Matching PetroAseo Reference */
 .app-sidebar {
-  width: 250px;
-  background-color: var(--sidebar-bg);
-  color: white;
+  width: 255px;
+  background-color: #ffffff;
+  color: var(--text-dark);
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 1rem;
-  border-right: 1px solid #1e293b;
+  padding: 1.5rem 1.1rem;
+  border-right: 1px solid var(--border);
   flex-shrink: 0;
   z-index: 150;
   transition: transform 0.3s ease;
 }
 
-.sidebar-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  margin-bottom: 2rem;
-  padding: 0 0.5rem;
-}
-
-.btn-close-sidebar {
-  margin-left: auto;
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  cursor: pointer;
-  display: none;
-}
-
-.sidebar-logo {
-  width: 42px;
-  height: 42px;
-  background: linear-gradient(135deg, #0284c7 0%, #10b981 100%);
-  border-radius: 10px;
+/* Official Logo Container Box at Top of Sidebar */
+.sidebar-brand-box {
+  background: #ffffff;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 0.65rem 0.85rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 800;
-  font-size: 1.2rem;
-  color: white;
-  box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
+  margin-bottom: 1.75rem;
+  position: relative;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.02);
 }
 
-.sidebar-brand-text h3 {
-  font-size: 1.15rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+.sidebar-logo-img {
+  max-height: 38px;
+  max-width: 100%;
+  object-fit: contain;
 }
 
-.sidebar-brand-text p {
-  font-size: 0.78rem;
-  color: #94a3b8;
+.btn-close-sidebar {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  display: none;
 }
 
 .sidebar-menu {
@@ -166,50 +147,112 @@ body {
   flex: 1;
 }
 
+/* Inactive Sidebar Buttons */
 .menu-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.85rem 1rem;
-  border-radius: 10px;
+  gap: 0.85rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: 12px;
   border: none;
   background: transparent;
-  color: #94a3b8;
-  font-size: 0.92rem;
-  font-weight: 600;
+  color: #475569;
+  font-size: 0.93rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   text-align: left;
-  position: relative;
 }
 
 .menu-item:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  color: white;
+  background-color: #f1f5f9;
+  color: var(--text-dark);
 }
 
+/* Active Crimson Red Sidebar Button (Exact Match to PetroAseo Reference) */
 .menu-item.active {
   background-color: var(--primary);
   color: white;
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+  box-shadow: 0 4px 14px rgba(200, 16, 46, 0.28);
 }
 
+.menu-item.active svg {
+  color: white;
+}
+
+/* Sidebar Footer & User Profile Chip */
 .sidebar-footer {
   padding-top: 1rem;
-  border-top: 1px solid #1e293b;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .btn-sidebar-reset {
   width: 100%;
-  padding: 0.65rem;
-  background-color: rgba(255, 255, 255, 0.08);
-  border: 1px dashed rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  color: #cbd5e1;
+  padding: 0.65rem 0.85rem;
+  background-color: #ffffff;
+  border: 1.5px solid var(--accent);
+  border-radius: 20px;
+  color: var(--accent-dark);
   font-size: 0.8rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.btn-sidebar-reset:hover {
+  background-color: #ecfdf5;
+}
+
+.sidebar-user-chip {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.6rem 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.user-avatar-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.user-info-text {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.user-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-role {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
 /* Main Workspace */
@@ -219,12 +262,13 @@ body {
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+  background-color: var(--bg-slate);
 }
 
 /* Mobile View Switcher (Hidden on Desktop) */
 .mobile-view-switcher {
   display: none;
-  background-color: #f1f5f9;
+  background-color: #e2e8f0;
   border-radius: 8px;
   padding: 0.2rem;
   border: 1px solid var(--border);
@@ -247,7 +291,7 @@ body {
 .switcher-btn.active {
   background-color: var(--primary);
   color: white;
-  box-shadow: 0 1px 4px rgba(2, 132, 199, 0.3);
+  box-shadow: 0 1px 4px rgba(200, 16, 46, 0.3);
 }
 
 /* STEP 1: INITIAL CONFIGURATION CARD */
@@ -264,10 +308,10 @@ body {
   background: white;
   border-radius: 16px;
   padding: 2.5rem;
-  max-width: 520px;
+  max-width: 540px;
   width: 100%;
   box-shadow: var(--shadow-lg);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
 }
 
 .step-card-header {
@@ -280,7 +324,7 @@ body {
   color: var(--primary-dark);
   font-size: 0.75rem;
   font-weight: 800;
-  padding: 0.3rem 0.7rem;
+  padding: 0.3rem 0.75rem;
   border-radius: 20px;
   margin-bottom: 0.75rem;
   text-transform: uppercase;
@@ -325,17 +369,18 @@ body {
 .form-input {
   padding: 0.85rem 1rem;
   border-radius: 10px;
-  border: 1.5px solid var(--border);
-  font-size: 1rem;
+  border: 1.5px solid var(--border-dark);
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-dark);
   outline: none;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  background-color: #ffffff;
 }
 
 .form-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
+  box-shadow: 0 0 0 4px rgba(200, 16, 46, 0.12);
 }
 
 .btn-proceed {
@@ -352,9 +397,13 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
-  transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(200, 16, 46, 0.28);
   min-height: 48px;
+}
+
+.btn-proceed:hover {
+  background-color: var(--primary-dark);
 }
 
 /* STEP 2: CAPTURE & LIVE PDF SPLIT VIEW */
@@ -369,7 +418,7 @@ body {
 .capture-header-bar {
   background-color: white;
   border-bottom: 1px solid var(--border);
-  padding: 0.75rem 1.5rem;
+  padding: 0.85rem 1.75rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -387,7 +436,7 @@ body {
   background-color: #f1f5f9;
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 0.45rem 0.8rem;
+  padding: 0.45rem 0.85rem;
   font-weight: 700;
   font-size: 0.82rem;
   cursor: pointer;
@@ -406,9 +455,10 @@ body {
 .chip {
   background-color: #f8fafc;
   border: 1px solid var(--border);
-  padding: 0.35rem 0.7rem;
+  padding: 0.35rem 0.75rem;
   border-radius: 20px;
   font-size: 0.82rem;
+  font-weight: 600;
   color: var(--text-dark);
 }
 
@@ -419,9 +469,9 @@ body {
 }
 
 .btn-subtle {
-  background-color: #e0f2fe;
-  color: var(--primary-dark);
-  border: 1px solid #bae6fd;
+  background-color: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid #fbcfe8;
   padding: 0.45rem 0.85rem;
   border-radius: 8px;
   font-size: 0.82rem;
@@ -447,10 +497,10 @@ body {
   padding: 1rem 1.25rem;
   overflow: hidden;
   border-right: 1px solid var(--border);
-  background-color: #f8fafc;
+  background-color: var(--bg-slate);
 }
 
-/* COMPACT SHORT SHIFT TABS (NO SCROLLBAR) */
+/* COMPACT SHORT SHIFT TABS */
 .compact-tabs-bar {
   display: flex;
   gap: 0.35rem;
@@ -467,14 +517,14 @@ body {
   justify-content: center;
   gap: 0.35rem;
   padding: 0.6rem 0.4rem;
-  border-radius: 8px;
+  border-radius: 10px;
   background-color: white;
   border: 1.5px solid var(--border);
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03);
   min-height: 40px;
 }
@@ -483,6 +533,7 @@ body {
   background-color: var(--primary);
   color: white;
   border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(200, 16, 46, 0.25);
 }
 
 .compact-label {
@@ -510,10 +561,10 @@ body {
   gap: 0.75rem;
 }
 
-/* HORIZONTAL PHOTO CARD (CUADROS HORIZONTALES) */
+/* HORIZONTAL PHOTO CARD */
 .card-horizontal {
   background: white;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1.5px solid var(--border);
   padding: 0.85rem 1.1rem;
   display: flex;
@@ -575,8 +626,8 @@ body {
   font-weight: 700;
   padding: 0.2rem 0.55rem;
   border-radius: 12px;
-  background-color: #e0f2fe;
-  color: #0369a1;
+  background-color: #fde8eb;
+  color: #a00c23;
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
@@ -630,7 +681,7 @@ body {
 
 .btn-action {
   padding: 0.65rem 0.95rem;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
@@ -647,6 +698,7 @@ body {
 .btn-action.primary {
   background-color: var(--primary);
   color: white;
+  box-shadow: 0 2px 8px rgba(200, 16, 46, 0.25);
 }
 
 .btn-action.danger {
@@ -660,7 +712,7 @@ body {
   background-color: #ffffff;
   color: var(--secondary);
   border: 1.5px solid var(--border);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 0.6rem 1rem;
   font-weight: 700;
   font-size: 0.85rem;
@@ -675,7 +727,7 @@ body {
   background-color: var(--primary);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 0.65rem 1.2rem;
   font-weight: 700;
   font-size: 0.88rem;
@@ -684,13 +736,14 @@ body {
   align-items: center;
   gap: 0.4rem;
   min-height: 44px;
+  box-shadow: 0 4px 12px rgba(200, 16, 46, 0.25);
 }
 
 .pane-footer-bar {
   background: white;
   border: 1px solid var(--border);
   padding: 0.75rem 1rem;
-  border-radius: 10px;
+  border-radius: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -707,7 +760,7 @@ body {
 .right-pane-preview {
   width: 50%;
   min-width: 440px;
-  background-color: #334155;
+  background-color: #1e293b;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -727,7 +780,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid #334155;
 }
 
 .toolbar-title {
@@ -736,7 +789,7 @@ body {
   gap: 0.4rem;
   font-size: 0.85rem;
   font-weight: 700;
-  color: #38bdf8;
+  color: #f43f5e;
 }
 
 .page-pagination {
@@ -782,11 +835,11 @@ body {
 }
 
 .btn-live-print {
-  background-color: var(--accent);
+  background-color: var(--primary);
   color: white;
   border: none;
   padding: 0.4rem 0.9rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
@@ -794,10 +847,11 @@ body {
   align-items: center;
   gap: 0.4rem;
   margin-left: 0.5rem;
+  box-shadow: 0 2px 8px rgba(200, 16, 46, 0.4);
 }
 
 .live-page-selector {
-  background-color: #1e293b;
+  background-color: #0f172a;
   padding: 0.4rem 0.75rem;
   display: flex;
   gap: 0.4rem;
@@ -817,7 +871,7 @@ body {
 }
 
 .page-tab-btn.active {
-  background-color: #0284c7;
+  background-color: var(--primary);
   color: white;
 }
 
@@ -850,7 +904,7 @@ body {
   border-collapse: collapse;
   font-size: 8pt;
   line-height: 1.2;
-  flex-shrink: 0; /* Header stays strictly at the top */
+  flex-shrink: 0;
 }
 
 .live-header-table td {
@@ -862,7 +916,7 @@ body {
 .live-brand-logo {
   font-weight: 800;
   font-size: 10pt;
-  color: #0284c7;
+  color: #c8102e;
   text-align: center;
 }
 
@@ -870,9 +924,9 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  flex: 1 1 0px; /* Stretches 100% to fill sheet to the exact bottom border */
+  flex: 1 1 0px;
   min-height: 0;
-  height: 0; /* Forces flex container to stretch grid 100% without leaving bottom gap */
+  height: 0;
   width: 100%;
   border-top: 1.5px solid #000;
   box-sizing: border-box;
@@ -982,7 +1036,7 @@ body {
 
 .settings-tab-btn.active {
   border-bottom-color: var(--primary);
-  color: var(--primary-dark);
+  color: var(--primary);
   background-color: white;
 }
 
@@ -1002,7 +1056,7 @@ body {
 
 .logo-upload-box {
   background-color: #f8fafc;
-  border: 1.5px dashed var(--border);
+  border: 1.5px dashed var(--border-dark);
   border-radius: 12px;
   padding: 1.25rem;
   display: flex;
@@ -1224,8 +1278,8 @@ body {
 
 .btn-history-view {
   background-color: var(--primary-light);
-  color: var(--primary-dark);
-  border: 1px solid #bae6fd;
+  color: var(--primary);
+  border: 1px solid #fbcfe8;
   padding: 0.6rem 1rem;
   border-radius: 8px;
   font-size: 0.85rem;
@@ -1256,8 +1310,8 @@ body {
   left: 0;
   right: 0;
   height: 60px;
-  background-color: #0f172a;
-  border-top: 1px solid #1e293b;
+  background-color: #ffffff;
+  border-top: 1px solid var(--border);
   z-index: 100;
   justify-content: space-around;
   align-items: center;
@@ -1271,7 +1325,7 @@ body {
   gap: 0.2rem;
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: #64748b;
   font-size: 0.72rem;
   font-weight: 700;
   cursor: pointer;
@@ -1280,14 +1334,14 @@ body {
 }
 
 .bottom-nav-item.active {
-  color: #38bdf8;
+  color: var(--primary);
 }
 
 /* Modals */
 .modal-backdrop {
   position: fixed;
   top:0; left:0; width:100%; height:100%;
-  background: rgba(0,0,0,0.75);
+  background: rgba(0,0,0,0.65);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1329,7 +1383,7 @@ body {
 
 .modal-tab-btn.active {
   border-bottom-color: var(--primary);
-  color: var(--primary-dark);
+  color: var(--primary);
   background-color: white;
 }
 
@@ -1356,10 +1410,10 @@ body {
   position: fixed;
   top: 20px;
   right: 20px;
-  background-color: #10b981;
+  background-color: var(--primary);
   color: white;
   padding: 0.85rem 1.4rem;
-  border-radius: 10px;
+  border-radius: 12px;
   font-weight: 700;
   box-shadow: var(--shadow-lg);
   display: flex;
@@ -1390,7 +1444,7 @@ body {
   }
 
   .app-shell {
-    padding-top: 56px;
+    padding-top: 60px;
     padding-bottom: 60px;
   }
 
@@ -1415,7 +1469,7 @@ body {
   }
 
   .app-workspace {
-    height: calc(100vh - 116px);
+    height: calc(100vh - 120px);
   }
 
   .mobile-view-switcher {
@@ -1628,14 +1682,14 @@ body {
 
   @page {
     size: A4 portrait;
-    margin: 4mm 4mm 4mm 4mm !important; /* Minimal 4mm margin so document fills 100% of printed sheet */
+    margin: 4mm 4mm 4mm 4mm !important;
   }
 
   .pdf-page-wrapper {
     page-break-after: always;
     page-break-inside: avoid;
     width: 100% !important;
-    height: 289mm !important; /* Maximized height to fill full A4 sheet without blank margins */
+    height: 289mm !important;
     display: flex !important;
     flex-direction: column !important;
     border: 2px solid #000;

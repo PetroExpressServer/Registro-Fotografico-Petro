@@ -263,8 +263,7 @@ export default function App() {
         </button>
 
         <div className="mobile-brand">
-          <span className="mobile-brand-logo">PL</span>
-          <span className="mobile-brand-title">PetroLimpio</span>
+          <img src="/petroaseo-logo.png" alt="PetroAseo" className="mobile-brand-img" />
         </div>
 
         {supervisor ? (
@@ -283,6 +282,7 @@ export default function App() {
         currentNav={currentNav}
         setCurrentNav={setCurrentNav}
         currentStep={currentStep}
+        supervisor={supervisor}
         onResetStep={() => setCurrentStep(1)}
         isOpen={isMobileSidebarOpen}
         onClose={() => setIsMobileSidebarOpen(false)}

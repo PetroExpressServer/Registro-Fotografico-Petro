@@ -1,11 +1,16 @@
 import React from 'react';
-import { Camera, Calendar, Settings, ArrowLeft, RefreshCw, X, ShieldAlert } from 'lucide-react';
+import { Camera, Calendar, Settings, RefreshCw, X, User } from 'lucide-react';
 
-export default function Sidebar({ currentNav, setCurrentNav, currentStep, onResetStep, isOpen, onClose }) {
+export default function Sidebar({ currentNav, setCurrentNav, currentStep, supervisor, onResetStep, isOpen, onClose }) {
   const handleNavClick = (navId) => {
     setCurrentNav(navId);
     if (onClose) onClose();
   };
+
+  // Get supervisor initials
+  const initials = supervisor
+    ? supervisor.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()
+    : 'AD';
 
   return (
     <>
@@ -13,13 +18,10 @@ export default function Sidebar({ currentNav, setCurrentNav, currentStep, onRese
       {isOpen && <div className="sidebar-backdrop" onClick={onClose} />}
 
       <aside className={`app-sidebar ${isOpen ? 'mobile-open' : ''}`}>
-        {/* Brand Header */}
-        <div className="sidebar-brand">
-          <div className="sidebar-logo">PL</div>
-          <div className="sidebar-brand-text">
-            <h3>PetroLimpio</h3>
-            <p>Registro Fotografico</p>
-          </div>
+        
+        {/* Brand Header with PetroAseo Logo */}
+        <div className="sidebar-brand-box">
+          <img src="/petroaseo-logo.png" alt="PetroAseo" className="sidebar-logo-img" />
           {isOpen && (
             <button className="btn-close-sidebar" onClick={onClose}>
               <X size={20} />
@@ -61,7 +63,17 @@ export default function Sidebar({ currentNav, setCurrentNav, currentStep, onRese
               <RefreshCw size={14} /> Cambiar Día / Supervisor
             </button>
           )}
+
+          {/* Supervisor Avatar Badge at Bottom */}
+          <div className="sidebar-user-chip">
+            <div className="user-avatar-badge">{initials}</div>
+            <div className="user-info-text">
+              <span className="user-name">{supervisor || 'Supervisor'}</span>
+              <span className="user-role">Administrador</span>
+            </div>
+          </div>
         </div>
+
       </aside>
     </>
   );
