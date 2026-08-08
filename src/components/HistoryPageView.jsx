@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
-import { Calendar, FileText, CheckCircle, AlertTriangle, ChevronRight, Search, Printer, Eye, Users } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Calendar, FileText, CheckCircle, AlertTriangle, ChevronRight, Search, Printer, Eye, Users, ChevronLeft } from 'lucide-react';
 
 export default function HistoryPageView({ records, onSelectRecord, onPrintRecord }) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
 
-  // Sort records from newest to oldest (del último al primero)
+  // Reset to page 1 when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
+  // Sort records from newest to oldest
   const sortedRecords = [...records].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 
-  // Filter records by search
+  // Filter records by search term
   const filteredRecords = sortedRecords.filter(rec => {
     const term = searchTerm.toLowerCase();
     const formattedDate = (rec.date || '').toLowerCase();
@@ -17,6 +24,14 @@ export default function HistoryPageView({ records, onSelectRecord, onPrintRecord
     return formattedDate.includes(term) || supervisor.includes(term) || contract.includes(term) || auditSups.includes(term);
   });
 
+  // Calculate pagination 20 items per page
+  const totalItems = filteredRecords.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
+  const validPage = Math.min(currentPage, totalPages);
+  
+  const startIndex = (validPage - 1) * itemsPerPage;
+  const pageRecords = filteredRecords.slice(startIndex, startIndex + itemsPerPage);
+
   return (
     <div className="history-page-wrapper">
       
@@ -24,7 +39,7 @@ export default function HistoryPageView({ records, onSelectRecord, onPrintRecord
       <div className="history-page-header">
         <div>
           <h2>📅 Historial de Registros Fotográficos</h2>
-          <p>Lista de informes diarios guardados en el sistema, ordenados del último al primero</p>
+          <p>Lista de informes diarios guardados en el sistema, ordenados de 20 en 20 del más reciente al más antiguo</p>
         </div>
 
         {/* Search input */}
@@ -45,11 +60,11 @@ export default function HistoryPageView({ records, onSelectRecord, onPrintRecord
           <div className="empty-history-state">
             <FileText size={52} className="empty-icon" />
             <h3>No se encontraron registros fotográficos</h3>
-            <p>Los días que vaya registrando aparecerán listados aquí en orden cronológico inverso.</p>
+            <p>Los días que vaya registrando aparecerán listados aquí de 20 en 20.</p>
           </div>
         ) : (
           <div className="history-list-cards">
-            {filteredRecords.map((rec) => {
+            {pageRecords.map((rec) => {
               const photosCount = Object.keys(rec.photos || {}).length;
               const totalSlots = 29;
               const isComplete = photosCount === totalSlots;
@@ -127,6 +142,45 @@ export default function HistoryPageView({ records, onSelectRecord, onPrintRecord
                 </div>
               );
             })}
+          </div>
+        )}
+
+        {/* 20-Item Pagination Controls Bar */}
+        {filteredRecords.length > 0 && (
+          <div className="history-pagination-bar">
+            <div className="pagination-info">
+              Mostrando <strong>{startIndex + 1} - {Math.min(startIndex + itemsPerPage, totalItems)}</strong> de <strong>{totalItems}</strong> informes
+            </div>
+
+            <div className="pagination-controls">
+              <button
+                className="btn-pagi-nav"
+                disabled={validPage === 1}
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              >
+                <ChevronLeft size={16} /> <span>Anterior</span>
+              </button>
+
+              <div className="pagi-numbers">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(pNum => (
+                  <button
+                    key={pNum}
+                    className={`btn-pagi-num ${validPage === pNum ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(pNum)}
+                  >
+                    {pNum}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                className="btn-pagi-nav"
+                disabled={validPage === totalPages}
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              >
+                <span>Siguiente</span> <ChevronRight size={16} />
+              </button>
+            </div>
           </div>
         )}
       </div>
