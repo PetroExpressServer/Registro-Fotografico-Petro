@@ -5,7 +5,7 @@ const DB_VERSION = 2; // Incremented for settings store
 
 export const DEFAULT_CONFIG = {
   companyName: 'CONSORCIO PETRO LIMPIO',
-  logoUrl: '', // Base64 image data or custom logo URL
+  logoUrl: '/petroaseo-logo.png', // Default official logo image URL across all mobile & desktop devices
   clientName: 'EMPRESA MUNICIPAL DE MERCADOS S.A',
   locationName: 'GRAN MERCADO MAYORISTA DE LIMA',
   

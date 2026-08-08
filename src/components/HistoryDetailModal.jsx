@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, CheckCircle, AlertTriangle, Calendar, User, ArrowRight, Printer, History, RefreshCw, Trash2, Camera, UserCheck } from 'lucide-react';
+import { X, CheckCircle, AlertTriangle, Calendar, Users, ArrowRight, Printer, History, RefreshCw, Trash2, Camera, UserCheck, FileText, Layers } from 'lucide-react';
 import { SHIFT_SLOTS } from '../constants/structure';
 
 export default function HistoryDetailModal({ record, isOpen, onClose, onLoadRecord, onPrintRecord }) {
@@ -56,94 +56,121 @@ export default function HistoryDetailModal({ record, isOpen, onClose, onLoadReco
     <div className="modal-backdrop" onClick={onClose}>
       <div className="history-detail-card" onClick={(e) => e.stopPropagation()}>
         
-        {/* Header */}
-        <div className="modal-header">
-          <div className="detail-header-title">
-            <Calendar size={20} className="header-icon" />
+        {/* Modal Top Header */}
+        <div className="modal-header-bar">
+          <div className="modal-header-info">
+            <div className="modal-header-icon-box">
+              <Calendar size={22} />
+            </div>
             <div>
-              <h3>Informe del {formattedDate}</h3>
-              <p>Contrato: <strong>{record.contract === 'PRINCIPAL' ? 'Contrato Principal' : 'Pabellón B2'}</strong></p>
+              <h3 className="modal-title">Informe del {formattedDate}</h3>
+              <div className="modal-sub-row">
+                <span className="modal-contract-tag">
+                  <Layers size={13} /> {record.contract === 'PRINCIPAL' ? 'Contrato Principal' : 'Pabellón B2'}
+                </span>
+                <span className="modal-date-tag">{formattedDate}</span>
+              </div>
             </div>
           </div>
-          <button className="btn-close" onClick={onClose}><X size={20} /></button>
+          
+          <button className="btn-modal-close" onClick={onClose} title="Cerrar ventana">
+            <X size={20} />
+          </button>
         </div>
 
-        {/* Navigation Tabs in Modal: Resumen vs Auditoría */}
+        {/* Modal Navigation Tabs */}
         <div className="modal-tabs-header">
           <button
             className={`modal-tab-btn ${activeTab === 'summary' ? 'active' : ''}`}
             onClick={() => setActiveTab('summary')}
           >
-            📊 Resumen y Fotos Faltantes
+            <span>📊 Resumen y Fotos Faltantes</span>
           </button>
 
           <button
             className={`modal-tab-btn ${activeTab === 'audit' ? 'active' : ''}`}
             onClick={() => setActiveTab('audit')}
           >
-            📜 Trazabilidad / Auditoría de Cambios ({auditLog.length})
+            <span>📜 Auditoría de Cambios ({auditLog.length})</span>
           </button>
         </div>
 
-        {/* Body Content */}
+        {/* Modal Body Content */}
         <div className="modal-body history-detail-body">
           
           {activeTab === 'summary' && (
             <>
-              {/* Top Metrics Cards */}
-              <div className="metrics-row">
+              {/* Executive Metrics Cards Grid */}
+              <div className="modal-metrics-grid">
                 
-                <div className={`metric-box ${isGlobalComplete ? 'complete' : 'incomplete'}`}>
-                  <span className="metric-label">Estado del Día</span>
-                  <div className="metric-value-row">
-                    {isGlobalComplete ? <CheckCircle size={20} /> : <AlertTriangle size={20} />}
-                    <span className="metric-value">
-                      {isGlobalComplete ? 'COMPLETO' : 'INCOMPLETO'}
-                    </span>
+                {/* Metric 1: Global Status */}
+                <div className={`modal-metric-card ${isGlobalComplete ? 'ok' : 'pending'}`}>
+                  <div className="metric-header-row">
+                    <span className="metric-card-label">Estado del Día</span>
+                    {isGlobalComplete ? <CheckCircle size={20} className="text-ok" /> : <AlertTriangle size={20} className="text-warn" />}
                   </div>
-                  <span className="metric-sub">{totalUploaded} de 29 fotos subidas</span>
+                  <div className="metric-card-value">
+                    {isGlobalComplete ? 'COMPLETO' : 'INCOMPLETO'}
+                  </div>
+                  <span className="metric-card-sub">{totalUploaded} de 29 fotos subidas</span>
                 </div>
 
-                <div className="metric-box warning">
-                  <span className="metric-label">Fotos Faltantes</span>
-                  <span className="metric-value text-amber">{totalMissing} pendientes</span>
-                  <span className="metric-sub">{isGlobalComplete ? 'Cero faltantes' : `Faltan ${totalMissing} foto(s)`}</span>
+                {/* Metric 2: Missing Photos */}
+                <div className="modal-metric-card warn">
+                  <div className="metric-header-row">
+                    <span className="metric-card-label">Fotos Faltantes</span>
+                    <AlertTriangle size={20} className="text-warn" />
+                  </div>
+                  <div className="metric-card-value text-warn">
+                    {totalMissing} pendientes
+                  </div>
+                  <span className="metric-card-sub">{isGlobalComplete ? 'Cero faltantes' : `Faltan ${totalMissing} foto(s)`}</span>
                 </div>
 
-                <div className="metric-box info">
-                  <span className="metric-label">Supervisores Participantes</span>
-                  <span className="metric-value text-blue">{uniqueSupervisors.length} supervisor(es)</span>
-                  <span className="metric-sub">{uniqueSupervisors.join(', ')}</span>
+                {/* Metric 3: Participating Supervisors */}
+                <div className="modal-metric-card info">
+                  <div className="metric-header-row">
+                    <span className="metric-card-label">Supervisores</span>
+                    <Users size={20} className="text-blue" />
+                  </div>
+                  <div className="metric-card-value text-blue">
+                    {uniqueSupervisors.length} registrado(s)
+                  </div>
+                  <span className="metric-card-sub" title={uniqueSupervisors.join(', ')}>
+                    {uniqueSupervisors.join(', ') || 'Sin especificar'}
+                  </span>
                 </div>
 
               </div>
 
-              {/* Breakdown per Shift */}
-              <div className="shifts-breakdown-section">
-                <h4>Desglose por Turno y Fotos Faltantes</h4>
+              {/* Shift Breakdown Section */}
+              <div className="modal-breakdown-section">
+                <h4 className="section-title">Desglose por Turno y Fotos Faltantes</h4>
 
-                <div className="shifts-grid">
+                <div className="shifts-grid-layout">
                   {shiftsList.map((shift, idx) => (
-                    <div key={idx} className={`shift-status-card ${shift.stats.isComplete ? 'complete' : 'incomplete'}`}>
-                      <div className="shift-card-header">
-                        <span className="shift-title">{shift.title}</span>
-                        <span className={`shift-badge ${shift.stats.isComplete ? 'ok' : 'pending'}`}>
+                    <div key={idx} className={`shift-breakdown-card ${shift.stats.isComplete ? 'ok' : 'pending'}`}>
+                      <div className="shift-card-head">
+                        <span className="shift-head-title">{shift.title}</span>
+                        <span className={`shift-status-pill ${shift.stats.isComplete ? 'ok' : 'pending'}`}>
                           {shift.stats.isComplete ? `✓ Completo (${shift.stats.uploadedCount}/${shift.stats.total})` : `⚠️ Faltan ${shift.stats.missingCount} (${shift.stats.uploadedCount}/${shift.stats.total})`}
                         </span>
                       </div>
 
                       {shift.stats.missingSlots.length > 0 ? (
-                        <div className="missing-slots-list">
-                          <span className="missing-label">❌ Fotos pendientes por subir:</span>
-                          <ul className="missing-items">
+                        <div className="missing-photos-container">
+                          <span className="missing-section-label">Fotos pendientes por subir:</span>
+                          <div className="missing-tags-grid">
                             {shift.stats.missingSlots.map(slot => (
-                              <li key={slot.id}>• {slot.title}</li>
+                              <span key={slot.id} className="missing-photo-tag">
+                                ❌ {slot.title}
+                              </span>
                             ))}
-                          </ul>
+                          </div>
                         </div>
                       ) : (
-                        <div className="complete-msg">
-                          <span>✓ Todas las fotos del turno fueron registradas</span>
+                        <div className="complete-photos-box">
+                          <span>✓ Todas las fotos de este turno fueron registradas correctamente.</span>
                         </div>
                       )}
                     </div>
@@ -155,13 +182,13 @@ export default function HistoryDetailModal({ record, isOpen, onClose, onLoadReco
 
           {activeTab === 'audit' && (
             <div className="audit-timeline-section">
-              <h4>📜 Registro de Auditoría (Quién hizo qué cambio)</h4>
-              <p className="audit-subtitle">Historial de subidas, cambios y eliminaciones por supervisor:</p>
+              <h4 className="section-title">📜 Registro de Auditoría (Trazabilidad de Cambios)</h4>
+              <p className="audit-subtitle">Historial cronológico de subidas, modificaciones y eliminaciones por supervisor:</p>
 
               {auditLog.length === 0 ? (
                 <div className="empty-audit-box">
-                  <History size={36} />
-                  <p>No hay registro de eventos detallados para esta fecha antigua.</p>
+                  <History size={40} className="empty-audit-icon" />
+                  <p>No hay registros de auditoría detallados para esta fecha antigua.</p>
                 </div>
               ) : (
                 <div className="audit-timeline">
@@ -208,7 +235,7 @@ export default function HistoryDetailModal({ record, isOpen, onClose, onLoadReco
 
         </div>
 
-        {/* Footer Actions */}
+        {/* Modal Bottom Footer Actions */}
         <div className="modal-footer">
           <button className="btn-secondary" onClick={() => onPrintRecord(record)}>
             <Printer size={16} /> Ver / Imprimir PDF
