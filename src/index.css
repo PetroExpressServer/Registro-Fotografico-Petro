@@ -870,9 +870,9 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  flex: 1; /* Stretches 100% to fill sheet to the bottom border */
-  min-height: 0; /* Prevents grid items from expanding row height beyond container */
-  height: 100%;
+  flex: 1 1 0px; /* Stretches 100% to fill sheet to the exact bottom border */
+  min-height: 0;
+  height: 0; /* Forces flex container to stretch grid 100% without leaving bottom gap */
   width: 100%;
   border-top: 1.5px solid #000;
   box-sizing: border-box;
@@ -1663,9 +1663,9 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    flex: 1 !important;
+    flex: 1 1 0px !important;
     min-height: 0 !important;
-    height: 100% !important;
+    height: 0 !important;
     width: 100%;
     border-top: 1.5px solid #000;
     box-sizing: border-box;
