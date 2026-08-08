@@ -11,9 +11,9 @@ import PdfReportTemplate from './components/PdfReportTemplate';
 
 import { SHIFT_SLOTS, CONTRACT_SPECS } from './constants/structure';
 import { DEFAULT_CONFIG } from './services/db';
-import { getRecord, saveRecord, getAllRecords, getSupervisors, addSupervisor, getConfig, isSupabaseConfigured } from './services/supabase';
+import { getRecord, saveRecord, getAllRecords, getSupervisors, addSupervisor, getConfig } from './services/supabase';
 import { applyWatermark } from './services/watermark';
-import { Save, Trash2, Printer, CheckCircle, X, ArrowLeft, History, Menu, Camera, Eye, Calendar, Settings, CloudCheck, CloudOff } from 'lucide-react';
+import { Save, Trash2, Printer, CheckCircle, X, ArrowLeft, History, Menu, Camera, Eye, Calendar, Settings } from 'lucide-react';
 
 export default function App() {
   // Navigation & Flow State
@@ -136,7 +136,7 @@ export default function App() {
     await saveRecord(payload);
     setRecord(payload);
     setIsExistingRecord(true);
-    notify('💾 Registro guardado en ' + (isSupabaseConfigured ? 'la Nube (Supabase)' : 'memoria local'));
+    notify('💾 Registro guardado correctamente');
   };
 
   // Upload photo handler with Audit Logging

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Save, RefreshCw, Upload, Image as ImageIcon, FileText, CheckCircle, Trash2, Edit3, Type, CloudCheck, CloudOff } from 'lucide-react';
-import { getConfig, saveConfig, isSupabaseConfigured } from '../services/supabase';
+import { Save, RefreshCw, Upload, Image as ImageIcon, FileText, CheckCircle, Trash2, Edit3, Type } from 'lucide-react';
+import { getConfig, saveConfig } from '../services/supabase';
 import { DEFAULT_CONFIG } from '../services/db';
 import { SHIFT_SLOTS } from '../constants/structure';
 
 export default function SettingsView({ onConfigUpdated, supervisorsList, onSupervisorsUpdated }) {
   const [config, setConfig] = useState(DEFAULT_CONFIG);
-  const [activeTab, setActiveTab] = useState('branding'); // 'branding' | 'titles' | 'slots' | 'cloud'
+  const [activeTab, setActiveTab] = useState('branding'); // 'branding' | 'titles' | 'slots'
   const [activeShiftTab, setActiveShiftTab] = useState('turno1');
   const [toast, setToast] = useState(null);
 
@@ -22,7 +22,7 @@ export default function SettingsView({ onConfigUpdated, supervisorsList, onSuper
   const handleSaveConfig = async () => {
     await saveConfig(config);
     if (onConfigUpdated) onConfigUpdated(config);
-    notify('💾 Formato guardado en ' + (isSupabaseConfigured ? 'la Nube (Supabase)' : 'memoria local'));
+    notify('💾 Formato guardado correctamente');
   };
 
   const handleResetConfig = async () => {
@@ -75,8 +75,8 @@ export default function SettingsView({ onConfigUpdated, supervisorsList, onSuper
       {/* Header */}
       <div className="settings-page-header">
         <div>
-          <h2>⚙️ Configuración del Formato y Nube</h2>
-          <p>Personalice el logo, textos de actividad, encabezados y conexión con Supabase / Vercel</p>
+          <h2>⚙️ Configuración del Formato</h2>
+          <p>Personalice el logo, textos de actividad y encabezados del PDF</p>
         </div>
 
         <div className="settings-header-btns">
@@ -114,14 +114,6 @@ export default function SettingsView({ onConfigUpdated, supervisorsList, onSuper
             onClick={() => setActiveTab('slots')}
           >
             <Type size={16} /> <span>Textos Fotos (29)</span>
-          </button>
-
-          <button
-            className={`settings-tab-btn ${activeTab === 'cloud' ? 'active' : ''}`}
-            onClick={() => setActiveTab('cloud')}
-          >
-            {isSupabaseConfigured ? <CloudCheck size={16} style={{ color: '#10b981' }} /> : <CloudOff size={16} />}
-            <span>Nube Supabase</span>
           </button>
         </div>
 
@@ -295,42 +287,6 @@ export default function SettingsView({ onConfigUpdated, supervisorsList, onSuper
                   </div>
                 );
               })}
-            </div>
-          </div>
-        )}
-
-        {/* Tab 4: Supabase Cloud Integration Status */}
-        {activeTab === 'cloud' && (
-          <div className="settings-section-content">
-            <h3>☁️ Conexión con Supabase y Vercel</h3>
-            <p className="section-desc">Estado de sincronización en tiempo real para todos los supervisores en la nube.</p>
-
-            <div className={`cloud-status-box ${isSupabaseConfigured ? 'connected' : 'disconnected'}`}>
-              <div className="cloud-status-header">
-                {isSupabaseConfigured ? <CloudCheck size={24} /> : <CloudOff size={24} />}
-                <div>
-                  <h4>{isSupabaseConfigured ? '🟢 Conectado a Supabase Cloud' : '🟡 Modo Local (IndexedDB)'}</h4>
-                  <p>
-                    {isSupabaseConfigured
-                      ? 'Todos los supervisores sincronizan y leen las fotos guardadas en tiempo real desde la nube.'
-                      : 'La aplicación guarda los datos en la memoria local de este navegador. Configure las variables en Vercel para activar Supabase.'}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="cloud-instructions-box margin-top">
-              <h4>📋 Pasos para desplegar en Vercel + Supabase:</h4>
-              <ol className="cloud-steps-list">
-                <li>Cree un proyecto en Supabase (Gratuito).</li>
-                <li>Ejecute la sentencia SQL guardada en <code>supabase_schema.sql</code> en el Editor SQL de Supabase.</li>
-                <li>Conecte su repositorio en Vercel y agregue las variables de entorno:
-                  <ul>
-                    <li><code>VITE_SUPABASE_URL</code></li>
-                    <li><code>VITE_SUPABASE_ANON_KEY</code></li>
-                  </ul>
-                </li>
-              </ol>
             </div>
           </div>
         )}
