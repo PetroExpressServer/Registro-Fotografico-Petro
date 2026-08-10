@@ -57,7 +57,6 @@ export default function PhotoCard({ slot, photoData, slotMeta, onUpload, onDelet
           type="file"
           id={`inp_${slot.id}`}
           accept="image/*"
-          capture="environment"
           style={{ display: 'none' }}
           onChange={handleFileChange}
         />
