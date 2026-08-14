@@ -300,22 +300,28 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 1.5rem 1rem;
   background-color: var(--bg-slate);
+  overflow-y: auto;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .step-init-card {
   background: white;
   border-radius: 16px;
-  padding: 2.5rem;
+  padding: 2.25rem 2rem;
   max-width: 540px;
   width: 100%;
   box-shadow: var(--shadow-lg);
   border: 1.5px solid var(--border);
+  box-sizing: border-box;
+  margin: auto;
 }
 
 .step-card-header {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .badge-step {
@@ -346,7 +352,43 @@ body {
 .step-form {
   display: flex;
   flex-direction: column;
-  gap: 1.35rem;
+  gap: 1.25rem;
+}
+
+/* Notice Banner when existing record found */
+.notice-banner {
+  background-color: #eff6ff;
+  border: 1.5px solid #93c5fd;
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  color: #1e40af;
+  margin-top: 0.25rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.notice-banner .notice-icon {
+  color: #2563eb;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.notice-banner strong {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #1e3a8a;
+  margin-bottom: 0.2rem;
+}
+
+.notice-banner p {
+  font-size: 0.82rem;
+  color: #1e40af;
+  margin: 0;
+  line-height: 1.35;
 }
 
 .form-group {
@@ -1819,11 +1861,14 @@ body {
   }
 
   .step-init-wrapper {
-    padding: 1rem;
+    padding: 1rem 0.75rem 2.5rem 0.75rem;
+    align-items: flex-start;
+    overflow-y: auto;
   }
 
   .step-init-card {
-    padding: 1.5rem;
+    padding: 1.25rem 1rem;
+    margin-bottom: 2rem;
   }
 
   /* Step 2 Mobile Layout: Single Screen Switching */
