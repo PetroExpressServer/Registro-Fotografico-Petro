@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, CheckCircle, AlertTriangle, Calendar, Users, ArrowRight, Printer, History, RefreshCw, Trash2, Camera, UserCheck, FileText, Layers } from 'lucide-react';
-import { SHIFT_SLOTS } from '../constants/structure';
+import { SHIFT_SLOTS, TOTAL_SLOTS } from '../constants/structure';
 
 export default function HistoryDetailModal({ record, isOpen, onClose, onLoadRecord, onPrintRecord }) {
   const [activeTab, setActiveTab] = useState('summary'); // 'summary' | 'audit'
@@ -11,7 +11,7 @@ export default function HistoryDetailModal({ record, isOpen, onClose, onLoadReco
   const slotMeta = record.slotMeta || {};
   const auditLog = record.auditLog || [];
 
-  const totalSlots = 29;
+  const totalSlots = TOTAL_SLOTS;
   const dParts = (record.date || '').split('-');
   const formattedDate = dParts.length === 3 ? `${dParts[2]}/${dParts[1]}/${dParts[0]}` : record.date;
 

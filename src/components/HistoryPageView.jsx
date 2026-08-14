@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, FileText, CheckCircle, AlertTriangle, ChevronRight, Search, Printer, Eye, Users, ChevronLeft } from 'lucide-react';
+import { TOTAL_SLOTS } from '../constants/structure';
 
 export default function HistoryPageView({ records, onSelectRecord, onPrintRecord }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -66,7 +67,7 @@ export default function HistoryPageView({ records, onSelectRecord, onPrintRecord
           <div className="history-list-cards">
             {pageRecords.map((rec) => {
               const photosCount = Object.keys(rec.photos || {}).length;
-              const totalSlots = 29;
+              const totalSlots = TOTAL_SLOTS;
               const isComplete = photosCount === totalSlots;
               const missingCount = totalSlots - photosCount;
 

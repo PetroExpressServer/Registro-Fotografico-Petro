@@ -9,9 +9,9 @@ import HistoryDetailModal from './components/HistoryDetailModal';
 import SettingsView from './components/SettingsView';
 import PdfReportTemplate from './components/PdfReportTemplate';
 
-import { SHIFT_SLOTS, CONTRACT_SPECS } from './constants/structure';
+import { SHIFT_SLOTS, CONTRACT_SPECS, TOTAL_SLOTS } from './constants/structure';
 import { DEFAULT_CONFIG } from './services/db';
-import { getRecord, saveRecord, getAllRecords, getSupervisors, addSupervisor, getConfig, syncLocalToCloud } from './services/supabase';
+import { getRecord, getAllRecords, getSupervisors, addSupervisor, getConfig, saveSinglePhoto, deleteSinglePhoto, subscribeToRecordChanges } from './services/supabase';
 import { applyWatermark } from './services/watermark';
 import { Save, Trash2, Printer, CheckCircle, X, ArrowLeft, History, Menu, Camera, Eye, Calendar, Settings } from 'lucide-react';
 
@@ -47,23 +47,22 @@ export default function App() {
 
   const notify = (msg) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 2500);
+    setTimeout(() => setToastMessage(null), 3000);
   };
 
-  // Load Config, Supervisors & Auto-sync local photos to cloud on Mount
+  // Load Config & Supervisors on Mount
   useEffect(() => {
     getConfig().then(setConfig);
     getSupervisors().then(setSupervisorsList);
-    syncLocalToCloud().then(count => {
-      if (count > 0) notify(`☁️ Sincronizados ${count} registros a la Nube`);
-    });
   }, []);
 
-  // Fetch Record when contract or date changes
+  // Fetch Record & Subscribe to Realtime Postgres changes when contract or date changes
   useEffect(() => {
+    let isMounted = true;
+
     async function fetchData() {
       const data = await getRecord(contract, date);
-      if (data) {
+      if (isMounted && data) {
         setRecord({
           photos: data.photos || {},
           slotMeta: data.slotMeta || {},
@@ -71,13 +70,28 @@ export default function App() {
           ...data
         });
         if (data.supervisor) setSupervisor(data.supervisor);
-        setIsExistingRecord(true);
-      } else {
-        setRecord({ photos: {}, slotMeta: {}, auditLog: [] });
-        setIsExistingRecord(false);
+        setIsExistingRecord(Object.keys(data.photos || {}).length > 0);
       }
     }
+
     fetchData();
+
+    // Supabase Realtime Subscription for multi-device instant sync
+    const unsubscribe = subscribeToRecordChanges(contract, date, (freshRecord) => {
+      if (isMounted && freshRecord) {
+        setRecord({
+          photos: freshRecord.photos || {},
+          slotMeta: freshRecord.slotMeta || {},
+          auditLog: freshRecord.auditLog || [],
+          ...freshRecord
+        });
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      if (unsubscribe) unsubscribe();
+    };
   }, [contract, date]);
 
   // Fetch all history records when navigating to history page
@@ -115,117 +129,69 @@ export default function App() {
     return allSlots.filter(s => s.category === activeTab);
   }, [activeTab, allSlots]);
 
-  // Save Record Action with optional new audit log entry
-  const handleSave = async (updatedPhotos = record.photos, updatedSlotMeta = record.slotMeta, newAuditEntry = null) => {
-    const supName = (supervisor && supervisor.trim()) ? supervisor.trim() : 'Supervisor sin especificar';
-    if (supName !== 'Supervisor sin especificar') {
-      await addSupervisor(supName);
-      const updatedList = await getSupervisors();
-      setSupervisorsList(updatedList);
-    }
-
-    const currentAudit = record.auditLog || [];
-    const updatedAuditLog = newAuditEntry ? [...currentAudit, newAuditEntry] : currentAudit;
-
-    const payload = {
-      contract,
-      date,
-      supervisor: supName,
-      photos: updatedPhotos,
-      slotMeta: updatedSlotMeta,
-      auditLog: updatedAuditLog
-    };
-
-    await saveRecord(payload);
-    setRecord(payload);
-    setIsExistingRecord(true);
-    notify('💾 Registro guardado correctamente');
-  };
-
-  // Upload photo handler with Audit Logging
+  // Upload photo handler (Direct Supabase Storage & Granular DB row, no Base64 in records.photos)
   const handlePhotoUpload = async (slotId, slotTitle, file) => {
     const supName = supervisor && supervisor.trim() ? supervisor.trim() : 'Supervisor de Turno';
-    const isReplacement = !!record.photos[slotId];
-    const timestamp = new Date().toISOString();
+    
+    if (supName !== 'Supervisor de Turno') {
+      addSupervisor(supName).then(() => getSupervisors().then(setSupervisorsList));
+    }
 
     try {
-      notify('⌛ Procesando imagen...');
-      const compressedBase64 = await applyWatermark(file, slotTitle, supName);
-      const newPhotos = { ...record.photos, [slotId]: compressedBase64 };
-
-      // Update Slot Metadata (Who last touched this photo)
-      const newSlotMeta = {
-        ...(record.slotMeta || {}),
-        [slotId]: {
-          lastSupervisor: supName,
-          lastUpdated: timestamp,
-          action: isReplacement ? 'REPLACED' : 'UPLOADED'
-        }
-      };
-
-      // Create Audit Log Entry
-      const auditEntry = {
-        id: `audit_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
-        timestamp,
-        supervisor: supName,
-        action: isReplacement ? 'REPLACE' : 'UPLOAD',
+      notify('⌛ Subiendo foto a la nube...');
+      const compressed = await applyWatermark(file, slotTitle, supName);
+      
+      const photoUrl = await saveSinglePhoto({
+        contract,
+        date,
         slotId,
         slotTitle,
-        details: isReplacement
-          ? `${supName} REEMPLAZÓ la foto de "${slotTitle}"`
-          : `${supName} SUBIÓ la foto de "${slotTitle}"`
-      };
+        supervisor: supName,
+        photoSource: compressed
+      });
 
-      await handleSave(newPhotos, newSlotMeta, auditEntry);
-      notify(isReplacement ? '🔄 Foto reemplazada' : '📸 Foto agregada');
+      // Update state immediately
+      setRecord(prev => ({
+        ...prev,
+        photos: { ...(prev.photos || {}), [slotId]: photoUrl },
+        slotMeta: {
+          ...(prev.slotMeta || {}),
+          [slotId]: { lastSupervisor: supName, updatedAt: new Date().toISOString() }
+        }
+      }));
+
+      notify('📸 Foto subida y guardada en la nube');
     } catch (err) {
-      console.error(err);
-      notify('❌ Error al procesar imagen');
+      console.error('Error uploading photo:', err);
+      notify(`❌ ${err.message || 'Error al subir foto a la nube'}`);
     }
   };
 
-  // Delete photo handler with Audit Logging
+  // Delete photo handler (Granular single slot deletion)
   const handlePhotoDelete = async (slotId, slotTitle) => {
     const supName = supervisor && supervisor.trim() ? supervisor.trim() : 'Supervisor de Turno';
-    const timestamp = new Date().toISOString();
+    try {
+      notify('⌛ Eliminando foto...');
+      await deleteSinglePhoto({
+        contract,
+        date,
+        slotId,
+        slotTitle,
+        supervisor: supName
+      });
 
-    const newPhotos = { ...record.photos };
-    delete newPhotos[slotId];
+      setRecord(prev => {
+        const newPhotos = { ...prev.photos };
+        delete newPhotos[slotId];
+        const newSlotMeta = { ...(prev.slotMeta || {}) };
+        delete newSlotMeta[slotId];
+        return { ...prev, photos: newPhotos, slotMeta: newSlotMeta };
+      });
 
-    const newSlotMeta = { ...(record.slotMeta || {}) };
-    delete newSlotMeta[slotId];
-
-    // Create Audit Log Entry for Deletion
-    const auditEntry = {
-      id: `audit_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
-      timestamp,
-      supervisor: supName,
-      action: 'DELETE',
-      slotId,
-      slotTitle,
-      details: `${supName} ELIMINÓ la foto de "${slotTitle}"`
-    };
-
-    await handleSave(newPhotos, newSlotMeta, auditEntry);
-    notify('🗑️ Foto eliminada');
-  };
-
-  const handleClearRecord = async () => {
-    const supName = supervisor && supervisor.trim() ? supervisor.trim() : 'Supervisor de Turno';
-    if (confirm(`¿Desea borrar todas las fotos del ${date} (${contract})? esta acción se registrará en la auditoría.`)) {
-      const timestamp = new Date().toISOString();
-      const auditEntry = {
-        id: `audit_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
-        timestamp,
-        supervisor: supName,
-        action: 'CLEAR',
-        slotId: 'all',
-        slotTitle: 'Todos los slots',
-        details: `${supName} VACIAÓ TODAS las fotos de este registro`
-      };
-
-      await handleSave({}, {}, auditEntry);
-      notify('🧹 Registro limpiado');
+      notify('🗑️ Foto eliminada de la nube');
+    } catch (err) {
+      console.error('Error deleting photo:', err);
+      notify(`❌ ${err.message || 'Error al eliminar foto de la nube'}`);
     }
   };
 
@@ -242,19 +208,19 @@ export default function App() {
     setIsHistoryDetailOpen(false);
     setCurrentNav('register');
     setCurrentStep(2);
+    notify(`📅 Cargado informe del ${rec.date} (${rec.contract})`);
   };
 
-  const handlePrintPDF = async () => {
-    await handleSave();
+  const handlePrintPDF = () => {
     window.print();
   };
 
   return (
     <div className="app-shell">
-      {/* Toast */}
+      
+      {/* Toast Notification Banner */}
       {toastMessage && (
         <div className="toast-notification">
-          <CheckCircle size={16} />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -306,7 +272,6 @@ export default function App() {
             isExistingRecord={isExistingRecord}
             existingPhotosCount={counts.all}
             onProceed={() => {
-              handleSave();
               setCurrentStep(2);
             }}
           />
@@ -335,7 +300,7 @@ export default function App() {
                   className={`switcher-btn ${mobilePaneView === 'photos' ? 'active' : ''}`}
                   onClick={() => setMobilePaneView('photos')}
                 >
-                  <Camera size={14} /> <span>Capturar ({counts.all}/29)</span>
+                  <Camera size={14} /> <span>Capturar ({counts.all}/{TOTAL_SLOTS})</span>
                 </button>
 
                 <button
@@ -385,15 +350,7 @@ export default function App() {
                 </div>
 
                 <div className="pane-footer-bar">
-                  <span>Fotos subidas: <strong>{counts.all} de 29</strong></span>
-                  <div className="footer-btns">
-                    <button className="btn-secondary" onClick={() => handleSave()}>
-                      <Save size={15} /> Guardar
-                    </button>
-                    <button className="btn-secondary danger" onClick={handleClearRecord}>
-                      <Trash2 size={15} /> Vaciar
-                    </button>
-                  </div>
+                  <span>Fotos subidas: <strong>{counts.all} de {TOTAL_SLOTS}</strong></span>
                 </div>
               </div>
 

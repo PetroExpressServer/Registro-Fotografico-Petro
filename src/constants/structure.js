@@ -48,6 +48,8 @@ export const SHIFT_SLOTS = {
   ]
 };
 
+export const TOTAL_SLOTS = 39;
+
 export const CONTRACT_SPECS = {
   PRINCIPAL: {
     name: "Contrato Principal",

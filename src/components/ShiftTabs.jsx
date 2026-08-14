@@ -1,9 +1,10 @@
 import React from 'react';
 import { Sun, SunMoon, Moon, Truck, Globe } from 'lucide-react';
+import { TOTAL_SLOTS } from '../constants/structure';
 
 export default function ShiftTabs({ activeTab, setActiveTab, counts }) {
   const tabs = [
-    { id: 'all', label: 'Todos', tooltip: 'Todos los Slots (29 fotos)', icon: Globe, count: `${counts.all}/29` },
+    { id: 'all', label: 'Todos', tooltip: `Todos los Slots (${TOTAL_SLOTS} fotos)`, icon: Globe, count: `${counts.all}/${TOTAL_SLOTS}` },
     { id: 'turno1', label: 'Turno 1', tooltip: 'Turno 1 (06:00 - 14:00 hrs)', icon: Sun, count: `${counts.t1}/8` },
     { id: 'turno2', label: 'Turno 2', tooltip: 'Turno 2 (14:00 - 22:00 hrs)', icon: SunMoon, count: `${counts.t2}/8` },
     { id: 'turno3', label: 'Turno 3', tooltip: 'Turno 3 (22:00 - 06:00 hrs)', icon: Moon, count: `${counts.t3}/8` },
