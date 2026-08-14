@@ -80,10 +80,10 @@ export default function StepInit({
           {/* Existing record notice */}
           {isExistingRecord && (
             <div className="notice-banner">
-              <ShieldCheck size={18} className="notice-icon" />
+              <ShieldCheck size={16} className="notice-icon" />
               <div>
-                <strong>📌 Registro existente encontrado</strong>
-                <p>Esta fecha ya contiene {existingPhotosCount} foto(s) registrada(s). Al continuar podrás verlas y completar el día.</p>
+                <strong>📌 Registro existente</strong>
+                <p>Puedes continuar para agregar las fotografías pendientes ({existingPhotosCount} subida(s)).</p>
               </div>
             </div>
           )}
