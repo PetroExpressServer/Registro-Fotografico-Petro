@@ -28,7 +28,14 @@ export default function StepInit({
         <div className="step-card-header">
           <div className="badge-step">Paso 1 de 2</div>
           <h2>Registro Fotográfico Diario</h2>
-          <p className="step-header-sub">Ingrese su nombre completo de supervisor y seleccione la fecha para comenzar</p>
+          
+          {/* Existing record notice badge inside header */}
+          {isExistingRecord && (
+            <div className="notice-banner">
+              <ShieldCheck size={14} className="notice-icon" />
+              <span>📌 <strong>Registro existente:</strong> {existingPhotosCount} foto(s) registrada(s)</span>
+            </div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="step-form">
@@ -76,14 +83,6 @@ export default function StepInit({
               <option value="B2">Contrato Pabellón B2</option>
             </select>
           </div>
-
-          {/* Existing record notice pill */}
-          {isExistingRecord && (
-            <div className="notice-banner">
-              <ShieldCheck size={15} className="notice-icon" />
-              <span>📌 <strong>Registro existente:</strong> {existingPhotosCount} foto(s) registrada(s)</span>
-            </div>
-          )}
 
           <div className="step-actions-footer">
             <button type="submit" className="btn-proceed">

@@ -1848,8 +1848,14 @@ body {
 
   /* Main Shell Layout on Mobile */
   .app-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    width: 100%;
     padding-top: var(--mobile-header-height);
     padding-bottom: 0;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   .app-sidebar {
@@ -1874,15 +1880,15 @@ body {
 
   /* Single Mobile Scroll Container */
   .app-workspace {
-    height: auto;
-    min-height: calc(100dvh - var(--mobile-header-height));
-    overflow-y: auto;
+    flex: 1;
+    height: calc(100dvh - var(--mobile-header-height));
+    overflow-y: scroll !important;
     -webkit-overflow-scrolling: touch;
     padding-bottom: calc(
       var(--mobile-bottom-nav-height)
       + env(safe-area-inset-bottom)
-      + 24px
-    );
+      + 40px
+    ) !important;
     box-sizing: border-box;
   }
 
