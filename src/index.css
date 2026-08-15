@@ -1855,7 +1855,6 @@ body {
 
 
 
-  /* Main Shell Layout on Mobile */
   .app-shell {
     display: block;
     width: 100%;
@@ -1867,15 +1866,17 @@ body {
 
   .mobile-bottom-nav {
     display: flex;
+    justify-content: space-around;
+    align-items: center;
     position: fixed;
     left: 0;
     right: 0;
     bottom: 0;
     height: calc(
       var(--mobile-bottom-nav-height)
-      + env(safe-area-inset-bottom)
+      + env(safe-area-inset-bottom, 0px)
     );
-    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     box-sizing: border-box;
     background: #fff;
     border-top: 1px solid var(--border);
@@ -1909,7 +1910,7 @@ body {
       100dvh 
       - var(--mobile-header-height) 
       - var(--mobile-bottom-nav-height) 
-      - env(safe-area-inset-bottom)
+      - env(safe-area-inset-bottom, 0px)
     );
     overflow-y: auto;
     overflow-x: hidden;
