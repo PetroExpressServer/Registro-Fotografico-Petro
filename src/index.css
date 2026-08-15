@@ -1865,16 +1865,45 @@ body {
   }
 
   .step-init-wrapper {
-    padding: 1rem 0.75rem calc(110px + env(safe-area-inset-bottom)) 0.75rem;
+    padding: 0.75rem 0.75rem calc(160px + env(safe-area-inset-bottom)) 0.75rem;
     align-items: flex-start;
     overflow-y: auto;
     min-height: 100dvh;
     box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
   }
 
   .step-init-card {
-    padding: 1.25rem 1rem;
-    margin-bottom: 24px;
+    padding: 1.1rem 0.85rem;
+    margin-bottom: 40px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .step-card-header {
+    margin-bottom: 1rem;
+  }
+
+  .step-card-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .step-card-header p {
+    font-size: 0.82rem;
+  }
+
+  .step-form {
+    gap: 0.95rem;
+  }
+
+  .btn-proceed {
+    margin-top: 0.75rem;
+    margin-bottom: 40px;
+    width: 100%;
+    padding: 0.9rem 1rem;
+    font-size: 0.95rem;
+    position: relative;
+    z-index: 10;
   }
 
   /* Step 2 Mobile Layout: Single Screen Switching */

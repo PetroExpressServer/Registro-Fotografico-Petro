@@ -44,6 +44,11 @@ export default function StepInit({
               list="supervisorsDatalist"
               placeholder="Escriba su nombre completo aquí"
               required
+              onFocus={(e) => {
+                setTimeout(() => {
+                  e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+              }}
             />
             <datalist id="supervisorsDatalist">
               {supervisorsList.map((sup, idx) => (
