@@ -428,6 +428,11 @@ body {
 
 .step-actions-footer {
   position: static;
+  bottom: auto;
+  z-index: auto;
+  padding-top: 0.4rem;
+  padding-bottom: 0;
+  background: transparent;
   width: 100%;
 }
 
@@ -1968,10 +1973,10 @@ body {
     position: static;
     bottom: auto;
     z-index: auto;
-    width: 100%;
     padding-top: 0.4rem;
     padding-bottom: 0;
     background: transparent;
+    width: 100%;
   }
 
   .btn-proceed {
