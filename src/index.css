@@ -1952,8 +1952,18 @@ body {
     font-size: 0.76rem;
   }
 
+  .step-actions-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    padding-top: 0.4rem;
+    padding-bottom: 0.2rem;
+    background: white;
+    width: 100%;
+  }
+
   .btn-proceed {
-    margin-top: 0.5rem;
+    margin-top: 0;
     margin-bottom: 0;
     width: 100%;
     min-height: 44px;

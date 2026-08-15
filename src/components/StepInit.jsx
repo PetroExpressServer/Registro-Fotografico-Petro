@@ -85,10 +85,12 @@ export default function StepInit({
             </div>
           )}
 
-          <button type="submit" className="btn-proceed">
-            <span>Continuar a Registro</span>
-            <ArrowRight size={18} />
-          </button>
+          <div className="step-actions-footer">
+            <button type="submit" className="btn-proceed">
+              <span>Continuar a Registro</span>
+              <ArrowRight size={18} />
+            </button>
+          </div>
         </form>
       </div>
     </div>
