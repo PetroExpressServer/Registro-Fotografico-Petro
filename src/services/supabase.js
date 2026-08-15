@@ -40,8 +40,9 @@ function base64ToBlob(base64Data, contentType = 'image/jpeg') {
   return new Blob(byteArrays, { type: contentType });
 }
 
-// 1. Upload Photo to Supabase Storage Bucket ('record-photos')
-export async function uploadPhotoToStorage(contract, date, slotId, photoSource) {
+// 1. Upload Photo File to Supabase Storage Bucket ('record-photos')
+// Path Structure: record-photos/{contract}_{date}/{shift}/{slot_id}.jpg
+export async function uploadPhotoToStorage(contract, date, shift, slotId, photoSource) {
   if (!isSupabaseConfigured || !supabase) throw new Error('Supabase no está configurado');
 
   let fileBlob;
@@ -53,11 +54,12 @@ export async function uploadPhotoToStorage(contract, date, slotId, photoSource) 
     throw new Error('Formato de imagen inválido');
   }
 
-  const filePath = `${contract}/${date}/${slotId}.jpg`;
+  const recordId = `${contract}_${date}`;
+  const storagePath = `${recordId}/${shift || 'general'}/${slotId}.jpg`;
   
   const { error: uploadError } = await supabase.storage
     .from('record-photos')
-    .upload(filePath, fileBlob, {
+    .upload(storagePath, fileBlob, {
       contentType: 'image/jpeg',
       upsert: true
     });
@@ -69,54 +71,68 @@ export async function uploadPhotoToStorage(contract, date, slotId, photoSource) 
 
   const { data: publicUrlData } = supabase.storage
     .from('record-photos')
-    .getPublicUrl(filePath);
+    .getPublicUrl(storagePath);
 
-  // Append timestamp query parameter to bust cache when updating
-  return `${publicUrlData.publicUrl}?t=${Date.now()}`;
+  // Bust browser cache with timestamp query parameter
+  const publicUrl = `${publicUrlData.publicUrl}?t=${Date.now()}`;
+  return { publicUrl, storagePath };
 }
 
-// 2. Fetch Single Record with Granular Photos & Independent Audit Log
+// 2. Fetch Daily Record & All Photos across ALL shifts and supervisors
+// Supabase is the SINGLE SOURCE OF TRUTH.
 export async function getRecord(contract, date) {
   const recordId = `${contract}_${date}`;
 
   if (isSupabaseConfigured && supabase) {
     try {
-      // Ensure master record row
+      // Ensure master record row exists
       const { data: mainRec } = await supabase
         .from('records')
         .select('*')
         .eq('id', recordId)
         .maybeSingle();
 
-      // Fetch all photos for this day and contract
+      // Fetch all photos for this contract & date (includes Juan, Pedro, Carlos, etc.)
       const { data: photosRows, error: photosErr } = await supabase
         .from('record_photos')
         .select('*')
-        .eq('contract', contract)
-        .eq('date', date);
+        .eq('record_id', recordId);
 
       if (photosErr && photosErr.code !== 'PGRST116' && photosErr.code !== '42P01') {
         throw photosErr;
       }
 
+      // Fetch shift supervisors (Turno 1 -> Juan, Turno 2 -> Pedro, etc.)
+      const { data: shiftRows } = await supabase
+        .from('record_shifts')
+        .select('*')
+        .eq('record_id', recordId);
+
       // Fetch audit log
       const { data: auditRows } = await supabase
         .from('record_audit')
         .select('*')
-        .eq('contract', contract)
-        .eq('date', date)
+        .eq('record_id', recordId)
         .order('created_at', { ascending: true });
 
       const photosMap = {};
       const slotMetaMap = {};
+      const shiftSupervisorsMap = {};
 
       if (photosRows) {
         photosRows.forEach(row => {
           photosMap[row.slot_id] = row.photo_url;
           slotMetaMap[row.slot_id] = {
             lastSupervisor: row.supervisor,
-            updatedAt: row.updated_at
+            updatedAt: row.updated_at,
+            shift: row.shift
           };
+        });
+      }
+
+      if (shiftRows) {
+        shiftRows.forEach(sRow => {
+          shiftSupervisorsMap[sRow.shift] = sRow.supervisor;
         });
       }
 
@@ -132,9 +148,9 @@ export async function getRecord(contract, date) {
         id: recordId,
         contract,
         date,
-        supervisor: mainRec?.supervisor || '',
         photos: photosMap,
         slotMeta: slotMetaMap,
+        shiftSupervisors: shiftSupervisorsMap,
         auditLog: auditList
       };
 
@@ -146,34 +162,50 @@ export async function getRecord(contract, date) {
   return localDb.getRecord(contract, date);
 }
 
-// 3. Upload & Save Single Photo (Granular Multi-Supervisor Concurrency)
-export async function saveSinglePhoto({ contract, date, slotId, slotTitle, supervisor, photoSource }) {
+// 3. Save Single Photo without Overwriting other slots or other supervisors
+// Inserts or updates strictly by (record_id, slot_id)
+export async function saveSinglePhoto({ contract, date, shift = 'turno1', slotId, slotTitle, supervisor, photoSource }) {
   if (!isSupabaseConfigured || !supabase) {
     throw new Error('Error de conexión a la nube. No se pudo guardar la foto.');
   }
 
   const recordId = `${contract}_${date}`;
-  const photoId = `${contract}_${date}_${slotId}`;
+  const photoId = `${recordId}_${slotId}`;
+  const shiftId = `${recordId}_${shift}`;
 
-  // Step A: Ensure Master Record Row
+  // Step A: Ensure Master Record Row exists (without locking a single supervisor to the whole day)
   const { error: masterErr } = await supabase
     .from('records')
     .upsert({
       id: recordId,
       contract,
       date,
-      supervisor,
       updated_at: new Date().toISOString()
     });
 
   if (masterErr) {
-    throw new Error(`Error en base de datos: ${masterErr.message}`);
+    throw new Error(`Error en base de datos master: ${masterErr.message}`);
   }
 
-  // Step B: Upload File to Supabase Storage Bucket ('record-photos')
-  const publicUrl = await uploadPhotoToStorage(contract, date, slotId, photoSource);
+  // Step B: Record supervisor responsible for this specific shift
+  if (supervisor && supervisor.trim()) {
+    await supabase
+      .from('record_shifts')
+      .upsert({
+        id: shiftId,
+        record_id: recordId,
+        contract,
+        date,
+        shift,
+        supervisor: supervisor.trim(),
+        updated_at: new Date().toISOString()
+      });
+  }
 
-  // Step C: Check if slot already has a photo to determine action (UPLOAD vs REPLACE)
+  // Step C: Upload File to Supabase Storage Bucket ('record-photos')
+  const { publicUrl, storagePath } = await uploadPhotoToStorage(contract, date, shift, slotId, photoSource);
+
+  // Step D: Check if slot already exists to log UPLOAD vs REPLACE action
   const { data: existingPhoto } = await supabase
     .from('record_photos')
     .select('supervisor')
@@ -182,7 +214,7 @@ export async function saveSinglePhoto({ contract, date, slotId, slotTitle, super
 
   const isReplace = !!existingPhoto;
 
-  // Step D: Insert/Upsert Row in record_photos (Specific to slot, no overwriting of other slots)
+  // Step E: Upsert row in record_photos ONLY for this slot_id
   const { error: photoErr } = await supabase
     .from('record_photos')
     .upsert({
@@ -190,18 +222,20 @@ export async function saveSinglePhoto({ contract, date, slotId, slotTitle, super
       record_id: recordId,
       contract,
       date,
+      shift,
       slot_id: slotId,
       slot_title: slotTitle,
       supervisor,
       photo_url: publicUrl,
+      storage_path: storagePath,
       updated_at: new Date().toISOString()
     });
 
   if (photoErr) {
-    throw new Error(`Error guardando información de foto: ${photoErr.message}`);
+    throw new Error(`Error guardando foto en base de datos: ${photoErr.message}`);
   }
 
-  // Step E: Insert Independent Audit Record
+  // Step F: Insert Audit Log entry
   const auditId = `aud_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
   const actionText = isReplace ? 'REPLACE' : 'UPLOAD';
   const detailsText = isReplace
@@ -225,16 +259,16 @@ export async function saveSinglePhoto({ contract, date, slotId, slotTitle, super
   return publicUrl;
 }
 
-// 4. Delete Single Photo (Granular Delete)
+// 4. Delete Single Photo (Granular Delete by slot_id)
 export async function deleteSinglePhoto({ contract, date, slotId, slotTitle, supervisor }) {
   if (!isSupabaseConfigured || !supabase) {
     throw new Error('Error de conexión a la nube. No se pudo eliminar la foto.');
   }
 
   const recordId = `${contract}_${date}`;
-  const photoId = `${contract}_${date}_${slotId}`;
+  const photoId = `${recordId}_${slotId}`;
 
-  // Delete from record_photos table
+  // Delete strictly from record_photos table for this slot_id
   const { error } = await supabase
     .from('record_photos')
     .delete()
@@ -244,7 +278,7 @@ export async function deleteSinglePhoto({ contract, date, slotId, slotTitle, sup
     throw new Error(`Error al eliminar foto: ${error.message}`);
   }
 
-  // Insert Audit Log for Delete Action
+  // Insert Audit Log entry
   const auditId = `aud_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
   await supabase
     .from('record_audit')
@@ -261,7 +295,7 @@ export async function deleteSinglePhoto({ contract, date, slotId, slotTitle, sup
     });
 }
 
-// 5. Fetch All Records for History View
+// 5. Fetch All Records for History Page
 export async function getAllRecords() {
   if (isSupabaseConfigured && supabase) {
     try {
@@ -276,29 +310,48 @@ export async function getAllRecords() {
         .from('record_photos')
         .select('*');
 
+      const { data: shifts } = await supabase
+        .from('record_shifts')
+        .select('*');
+
       const photosByRecord = {};
       const slotMetaByRecord = {};
+      const supervisorsByRecord = {};
 
       (photos || []).forEach(p => {
         if (!photosByRecord[p.record_id]) photosByRecord[p.record_id] = {};
         if (!slotMetaByRecord[p.record_id]) slotMetaByRecord[p.record_id] = {};
+        if (!supervisorsByRecord[p.record_id]) supervisorsByRecord[p.record_id] = new Set();
+        
         photosByRecord[p.record_id][p.slot_id] = p.photo_url;
         slotMetaByRecord[p.record_id][p.slot_id] = {
           lastSupervisor: p.supervisor,
-          updatedAt: p.updated_at
+          updatedAt: p.updated_at,
+          shift: p.shift
         };
+        if (p.supervisor) supervisorsByRecord[p.record_id].add(p.supervisor);
+      });
+
+      (shifts || []).forEach(s => {
+        if (!supervisorsByRecord[s.record_id]) supervisorsByRecord[s.record_id] = new Set();
+        if (s.supervisor) supervisorsByRecord[s.record_id].add(s.supervisor);
       });
 
       if (recs) {
-        return recs.map(r => ({
-          id: r.id,
-          contract: r.contract,
-          date: r.date,
-          supervisor: r.supervisor,
-          photos: photosByRecord[r.id] || {},
-          slotMeta: slotMetaByRecord[r.id] || {},
-          auditLog: []
-        }));
+        return recs.map(r => {
+          const supSet = supervisorsByRecord[r.id] || new Set();
+          const supervisorListStr = Array.from(supSet).join(', ');
+
+          return {
+            id: r.id,
+            contract: r.contract,
+            date: r.date,
+            supervisor: supervisorListStr || 'Sin especificar',
+            photos: photosByRecord[r.id] || {},
+            slotMeta: slotMetaByRecord[r.id] || {},
+            auditLog: []
+          };
+        });
       }
     } catch (err) {
       console.warn('Error fetching all records from Supabase Cloud:', err);
@@ -307,7 +360,8 @@ export async function getAllRecords() {
   return localDb.getAllRecords();
 }
 
-// 6. Supabase Realtime Subscription for Instant Multi-Device Sync
+// 6. Supabase Realtime Subscription
+// Updates local state incrementally without wiping existing photos
 export function subscribeToRecordChanges(contract, date, onUpdateCallback) {
   if (!isSupabaseConfigured || !supabase) return () => {};
 
@@ -325,8 +379,10 @@ export function subscribeToRecordChanges(contract, date, onUpdateCallback) {
         filter: `record_id=eq.${recordId}`
       },
       () => {
-        // Fetch fresh state on change
-        getRecord(contract, date).then(onUpdateCallback);
+        // Fetch fresh state for this record without modifying active supervisor session
+        getRecord(contract, date).then(freshRecord => {
+          if (freshRecord) onUpdateCallback(freshRecord);
+        });
       }
     )
     .subscribe();

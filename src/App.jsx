@@ -33,7 +33,7 @@ export default function App() {
   const [supervisor, setSupervisor] = useState('');
   const [supervisorsList, setSupervisorsList] = useState([]);
 
-  const [record, setRecord] = useState({ photos: {}, slotMeta: {}, auditLog: [] });
+  const [record, setRecord] = useState({ photos: {}, slotMeta: {}, shiftSupervisors: {}, auditLog: [] });
   const [isExistingRecord, setIsExistingRecord] = useState(false);
   const [activeTab, setActiveTab] = useState('turno1');
 
@@ -57,6 +57,7 @@ export default function App() {
   }, []);
 
   // Fetch Record & Subscribe to Realtime Postgres changes when contract or date changes
+  // Note: NEVER overwrites current active supervisor session state!
   useEffect(() => {
     let isMounted = true;
 
@@ -66,10 +67,10 @@ export default function App() {
         setRecord({
           photos: data.photos || {},
           slotMeta: data.slotMeta || {},
+          shiftSupervisors: data.shiftSupervisors || {},
           auditLog: data.auditLog || [],
           ...data
         });
-        if (data.supervisor) setSupervisor(data.supervisor);
         setIsExistingRecord(Object.keys(data.photos || {}).length > 0);
       }
     }
@@ -79,12 +80,14 @@ export default function App() {
     // Supabase Realtime Subscription for multi-device instant sync
     const unsubscribe = subscribeToRecordChanges(contract, date, (freshRecord) => {
       if (isMounted && freshRecord) {
-        setRecord({
+        setRecord(prev => ({
+          ...prev,
           photos: freshRecord.photos || {},
           slotMeta: freshRecord.slotMeta || {},
-          auditLog: freshRecord.auditLog || [],
-          ...freshRecord
-        });
+          shiftSupervisors: freshRecord.shiftSupervisors || {},
+          auditLog: freshRecord.auditLog || []
+        }));
+        setIsExistingRecord(Object.keys(freshRecord.photos || {}).length > 0);
       }
     });
 
@@ -129,13 +132,16 @@ export default function App() {
     return allSlots.filter(s => s.category === activeTab);
   }, [activeTab, allSlots]);
 
-  // Upload photo handler (Direct Supabase Storage & Granular DB row, no Base64 in records.photos)
+  // Upload photo handler (Direct Supabase Storage & Granular DB row per slot_id)
   const handlePhotoUpload = async (slotId, slotTitle, file) => {
     const supName = supervisor && supervisor.trim() ? supervisor.trim() : 'Supervisor de Turno';
     
     if (supName !== 'Supervisor de Turno') {
       addSupervisor(supName).then(() => getSupervisors().then(setSupervisorsList));
     }
+
+    const targetSlot = allSlots.find(s => s.id === slotId);
+    const slotCategory = targetSlot ? targetSlot.category : 'turno1';
 
     try {
       notify('⌛ Subiendo foto a la nube...');
@@ -144,22 +150,28 @@ export default function App() {
       const photoUrl = await saveSinglePhoto({
         contract,
         date,
+        shift: slotCategory,
         slotId,
         slotTitle,
         supervisor: supName,
         photoSource: compressed
       });
 
-      // Update state immediately
+      // Update state immediately without wiping other slots or other supervisors
       setRecord(prev => ({
         ...prev,
         photos: { ...(prev.photos || {}), [slotId]: photoUrl },
         slotMeta: {
           ...(prev.slotMeta || {}),
-          [slotId]: { lastSupervisor: supName, updatedAt: new Date().toISOString() }
+          [slotId]: { lastSupervisor: supName, updatedAt: new Date().toISOString(), shift: slotCategory }
+        },
+        shiftSupervisors: {
+          ...(prev.shiftSupervisors || {}),
+          [slotCategory]: supName
         }
       }));
 
+      setIsExistingRecord(true);
       notify('📸 Foto subida y guardada en la nube');
     } catch (err) {
       console.error('Error uploading photo:', err);
@@ -181,7 +193,7 @@ export default function App() {
       });
 
       setRecord(prev => {
-        const newPhotos = { ...prev.photos };
+        const newPhotos = { ...(prev.photos || {}) };
         delete newPhotos[slotId];
         const newSlotMeta = { ...(prev.slotMeta || {}) };
         delete newSlotMeta[slotId];
@@ -203,7 +215,6 @@ export default function App() {
   const handleLoadRecordFromDetail = (rec) => {
     setContract(rec.contract);
     setDate(rec.date);
-    if (rec.supervisor) setSupervisor(rec.supervisor);
     setRecord(rec);
     setIsHistoryDetailOpen(false);
     setCurrentNav('register');
@@ -379,7 +390,6 @@ export default function App() {
             onPrintRecord={(rec) => {
               setContract(rec.contract);
               setDate(rec.date);
-              if (rec.supervisor) setSupervisor(rec.supervisor);
               setRecord(rec);
               window.print();
             }}
@@ -447,7 +457,6 @@ export default function App() {
         onPrintRecord={(rec) => {
           setContract(rec.contract);
           setDate(rec.date);
-          if (rec.supervisor) setSupervisor(rec.supervisor);
           setRecord(rec);
           setIsHistoryDetailOpen(false);
           window.print();
