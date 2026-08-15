@@ -1867,6 +1867,11 @@ body {
 
     padding-top: var(--mobile-header-height);
 
+    padding-bottom: calc(
+      var(--mobile-bottom-nav-height)
+      + env(safe-area-inset-bottom)
+    );
+
     overflow: hidden;
     box-sizing: border-box;
   }
@@ -1905,11 +1910,7 @@ body {
 
     box-sizing: border-box;
 
-    padding-bottom: calc(
-      var(--mobile-bottom-nav-height)
-      + env(safe-area-inset-bottom)
-      + 40px
-    );
+    padding-bottom: 24px;
   }
 
   .mobile-view-switcher {
