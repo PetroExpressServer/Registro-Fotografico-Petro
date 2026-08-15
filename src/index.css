@@ -1856,9 +1856,13 @@ body {
   /* Main Shell Layout on Mobile */
   .app-shell {
     display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
-    height: 100vh;
-    padding-top: var(--mobile-header-height);
+    height: auto;
     overflow: hidden;
     box-sizing: border-box;
   }
@@ -1901,8 +1905,13 @@ body {
 
   .app-workspace {
     display: block;
+    position: absolute;
+    top: var(--mobile-header-height);
+    bottom: var(--mobile-bottom-nav-height);
+    left: 0;
+    right: 0;
     width: 100%;
-    height: calc(100vh - var(--mobile-header-height) - var(--mobile-bottom-nav-height));
+    height: auto;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
