@@ -1911,6 +1911,7 @@ body {
     left: 0;
     right: 0;
     width: 100%;
+    min-height: 0;
     height: auto;
     overflow-y: auto;
     overflow-x: hidden;
