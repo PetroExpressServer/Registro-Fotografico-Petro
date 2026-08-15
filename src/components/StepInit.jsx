@@ -94,7 +94,7 @@ export default function StepInit({
           )}
 
           <button type="submit" className="btn-proceed">
-            <span>Continuar a Registro de Fotos por Hora</span>
+            <span>Continuar a Registro</span>
             <ArrowRight size={18} />
           </button>
         </form>

@@ -1865,17 +1865,17 @@ body {
   }
 
   .step-init-wrapper {
-    padding: 0.75rem 0.75rem calc(160px + env(safe-area-inset-bottom)) 0.75rem;
+    padding: 0.75rem 0.75rem calc(180px + env(safe-area-inset-bottom)) 0.75rem !important;
     align-items: flex-start;
-    overflow-y: auto;
+    overflow-y: auto !important;
     min-height: 100dvh;
     box-sizing: border-box;
     -webkit-overflow-scrolling: touch;
   }
 
   .step-init-card {
-    padding: 1.1rem 0.85rem;
-    margin-bottom: 40px;
+    padding: 1.1rem 0.85rem 1.5rem 0.85rem;
+    margin-bottom: 60px !important;
     width: 100%;
     box-sizing: border-box;
   }
@@ -1898,12 +1898,14 @@ body {
 
   .btn-proceed {
     margin-top: 0.75rem;
-    margin-bottom: 40px;
+    margin-bottom: 30px !important;
     width: 100%;
     padding: 0.9rem 1rem;
     font-size: 0.95rem;
+    white-space: nowrap;
     position: relative;
     z-index: 10;
+    flex-shrink: 0;
   }
 
   /* Step 2 Mobile Layout: Single Screen Switching */
