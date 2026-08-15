@@ -23,15 +23,15 @@ export default function StepInit({
   };
 
   return (
-    <div className="step-init-wrapper">
-      <div className="step-init-card">
+    <div className="step-init-wrapper" style={{ paddingBottom: 'calc(180px + env(safe-area-inset-bottom))', overflowY: 'auto', minHeight: '100dvh' }}>
+      <div className="step-init-card" style={{ marginBottom: '60px' }}>
         <div className="step-card-header">
           <div className="badge-step">Paso 1 de 2</div>
           <h2>Registro Fotográfico Diario</h2>
           <p>Ingrese su nombre completo de supervisor y seleccione la fecha para comenzar</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="step-form">
+        <form onSubmit={handleSubmit} className="step-form" style={{ gap: '1rem' }}>
           
           {/* Supervisor */}
           <div className="form-group">
@@ -84,7 +84,7 @@ export default function StepInit({
 
           {/* Existing record notice */}
           {isExistingRecord && (
-            <div className="notice-banner">
+            <div className="notice-banner" style={{ padding: '0.65rem 0.85rem' }}>
               <ShieldCheck size={16} className="notice-icon" />
               <div>
                 <strong>📌 Registro existente</strong>
@@ -93,7 +93,19 @@ export default function StepInit({
             </div>
           )}
 
-          <button type="submit" className="btn-proceed">
+          <button
+            type="submit"
+            className="btn-proceed"
+            style={{
+              marginTop: '1rem',
+              marginBottom: '40px',
+              whiteSpace: 'nowrap',
+              width: '100%',
+              minHeight: '48px',
+              position: 'relative',
+              zIndex: 10
+            }}
+          >
             <span>Continuar a Registro</span>
             <ArrowRight size={18} />
           </button>
