@@ -29,13 +29,7 @@ export default function StepInit({
           <div className="badge-step">Paso 1 de 2</div>
           <h2>Registro Fotográfico Diario</h2>
           
-          {/* Existing record notice badge inside header */}
-          {isExistingRecord && (
-            <div className="notice-banner">
-              <ShieldCheck size={14} className="notice-icon" />
-              <span>📌 <strong>Registro existente:</strong> {existingPhotosCount} foto(s) registrada(s)</span>
-            </div>
-          )}
+
         </div>
 
         <form onSubmit={handleSubmit} className="step-form">
