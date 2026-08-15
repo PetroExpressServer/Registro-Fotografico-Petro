@@ -82,8 +82,8 @@ export default function StepInit({
             <div className="notice-banner">
               <ShieldCheck size={16} className="notice-icon" />
               <div>
-                <strong>📌 Registro existente</strong>
-                <p>Puedes continuar para agregar las fotografías pendientes ({existingPhotosCount} subida(s)).</p>
+                <strong>📌 Registro existente ({existingPhotosCount} foto(s))</strong>
+                <p>Puedes continuar para agregar o modificar las fotos del día.</p>
               </div>
             </div>
           )}
