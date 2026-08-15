@@ -426,6 +426,11 @@ body {
   box-shadow: 0 0 0 4px rgba(200, 16, 46, 0.12);
 }
 
+.step-actions-footer {
+  position: static;
+  width: 100%;
+}
+
 .btn-proceed {
   margin-top: 1rem;
   padding: 0.85rem 1.5rem;
@@ -445,6 +450,7 @@ body {
   min-height: 48px;
   width: 100%;
   white-space: nowrap;
+  position: static;
 }
 
 .btn-proceed:hover {
@@ -1959,13 +1965,13 @@ body {
   }
 
   .step-actions-footer {
-    position: sticky;
-    bottom: 0;
-    z-index: 10;
-    padding-top: 0.4rem;
-    padding-bottom: 0.2rem;
-    background: white;
+    position: static;
+    bottom: auto;
+    z-index: auto;
     width: 100%;
+    padding-top: 0.4rem;
+    padding-bottom: 0;
+    background: transparent;
   }
 
   .btn-proceed {
