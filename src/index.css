@@ -1853,12 +1853,11 @@ body {
     display: block;
   }
 
-
-
+  /* Main Shell Layout on Mobile */
   .app-shell {
     display: block;
     width: 100%;
-    height: 100dvh;
+    height: 100vh;
     padding-top: var(--mobile-header-height);
     overflow: hidden;
     box-sizing: border-box;
@@ -1872,11 +1871,8 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    height: calc(
-      var(--mobile-bottom-nav-height)
-      + env(safe-area-inset-bottom, 0px)
-    );
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    height: var(--mobile-bottom-nav-height);
+    padding-bottom: 0;
     box-sizing: border-box;
     background: #fff;
     border-top: 1px solid var(--border);
@@ -1906,12 +1902,7 @@ body {
   .app-workspace {
     display: block;
     width: 100%;
-    height: calc(
-      100dvh 
-      - var(--mobile-header-height) 
-      - var(--mobile-bottom-nav-height) 
-      - env(safe-area-inset-bottom, 0px)
-    );
+    height: calc(100vh - var(--mobile-header-height) - var(--mobile-bottom-nav-height));
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
