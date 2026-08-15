@@ -28,14 +28,14 @@ export default function StepInit({
         <div className="step-card-header">
           <div className="badge-step">Paso 1 de 2</div>
           <h2>Registro Fotográfico Diario</h2>
-          <p>Ingrese su nombre completo de supervisor y seleccione la fecha para comenzar</p>
+          <p className="step-header-sub">Ingrese su nombre completo de supervisor y seleccione la fecha para comenzar</p>
         </div>
 
         <form onSubmit={handleSubmit} className="step-form">
           
           {/* Supervisor */}
           <div className="form-group">
-            <label><User size={16} /> Nombre del Supervisor</label>
+            <label><User size={15} /> Nombre del Supervisor</label>
             <input
               type="text"
               className="form-input"
@@ -54,7 +54,7 @@ export default function StepInit({
 
           {/* Fecha */}
           <div className="form-group">
-            <label><CalendarIcon size={16} /> Fecha a Registrar</label>
+            <label><CalendarIcon size={15} /> Fecha a Registrar</label>
             <input
               type="date"
               className="form-input"
@@ -66,7 +66,7 @@ export default function StepInit({
 
           {/* Contrato */}
           <div className="form-group">
-            <label><FileText size={16} /> Contrato / Pabellón</label>
+            <label><FileText size={15} /> Contrato / Pabellón</label>
             <select
               className="form-input"
               value={contract}
@@ -77,14 +77,11 @@ export default function StepInit({
             </select>
           </div>
 
-          {/* Existing record notice */}
+          {/* Existing record notice pill */}
           {isExistingRecord && (
             <div className="notice-banner">
-              <ShieldCheck size={16} className="notice-icon" />
-              <div>
-                <strong>📌 Registro existente ({existingPhotosCount} foto(s))</strong>
-                <p>Puedes continuar para agregar o modificar las fotos del día.</p>
-              </div>
+              <ShieldCheck size={15} className="notice-icon" />
+              <span>📌 <strong>Registro existente:</strong> {existingPhotosCount} foto(s) registrada(s)</span>
             </div>
           )}
 
